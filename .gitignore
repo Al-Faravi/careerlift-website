@@ -1,0 +1,34 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Dependency directories (এটি node_modules কে গিট থেকে দূরে রাখবে!)
+node_modules/
+jspm_packages/
+
+# Build output
+dist/
+build/
+
+# Environment variables (আপনার সিক্রেট API Key বা URL সুরক্ষার জন্য)
+.env
+.env.local
+.env.*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
