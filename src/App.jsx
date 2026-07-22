@@ -10,6 +10,7 @@ import StudyAbroad from './pages/StudyAbroad/StudyAbroad';
 import Services from './pages/Services/Services';
 import AboutUs from './pages/AboutUs/AboutUs';
 import NsdaFreeCourse from './pages/Courses/NsdaFreeCourse'; // New Dedicated Page
+import CourseDetails from './pages/Courses/CourseDetails';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="/services" element={<Services />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/nsda-free-course" element={<NsdaFreeCourse />} /> {/* Dedicated Route */}
+            <Route path="/course/:id" element={<CourseDetails />} />
           </Routes>
         </main>
 
