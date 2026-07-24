@@ -32,3 +32,9 @@ build/
 *.njsproj
 *.sln
 *.sw?
+
+# Ignore local personal downloads or accidental folder uploads
+public/Downloads/
+*.exe
+*.rar
+*.zip
