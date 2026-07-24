@@ -27,7 +27,7 @@ export default function StudyAbroad() {
     serviceType: 'Study Abroad', 
     destination: 'UK', 
     level: 'Bachelors',
-    source: 'Study Abroad Page' // স্পেশাল ট্র্যাকার
+    source: 'Study Abroad Page' // Lead Source Tracking
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -46,7 +46,7 @@ export default function StudyAbroad() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // আপনার আসল Google Apps Script Web App URL
+    // Your actual Google Apps Script Web App URL
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6xxm5ItCCd-z8tlMzYxZMx0xHn7IYdLY_iCOD0KxBi_sbDfDFyf00RQzQE_rj_s9x/exec";
 
     try {
@@ -151,7 +151,7 @@ export default function StudyAbroad() {
     { name: "Switzerland", flag: "/flags/ch.png" }
   ];
 
-  // Comprehensive Legal Study Destinations Data (Excluding USA, using your exact flag images)
+  // Comprehensive Legal Study Destinations Data
   const destinations = {
     "uk": {
       id: "uk",
@@ -340,7 +340,7 @@ export default function StudyAbroad() {
       flag: "/flags/nz.png",
       badge: "Green List PR",
       landmarkImg: "https://images.unsplash.com/photo-1507699622108-4be3abd695ad?auto=format&fit=crop&w=1000&q=80",
-      tagline: { EN: "Safe, Peaceful Environment & Direct Green List PR Pathways", BN: "নিরাপদ, শান্তিময় পরিবেশ এবং গ্রین লিস্ট PR সুবিধা" },
+      tagline: { EN: "Safe, Peaceful Environment & Direct Green List PR Pathways", BN: "নিরাপদ, শান্তিময় পরিবেশ এবং গ্রিন লিস্ট PR সুবিধা" },
       pswr: { EN: "Up to 3 Years Post-Study Work Visa", BN: "সর্বোচ্চ ৩ বছরের পোস্ট-স্টাডি ওয়ার্ক ভিসা" },
       intakes: { EN: "February, July & November", BN: "ফেব্রুয়ারি, জুলাই ও নভেম্বর ইনটেক" },
       tuition: { EN: "$18,000 - $28,000 NZD / Year", BN: "১৮,০০০ - ২৮,০০০ নিউজিল্যান্ড ডলার / বছর" },
@@ -408,7 +408,7 @@ export default function StudyAbroad() {
     }
   };
 
-  // Step-by-Step Process Timeline Data (100% Standard Core Icons NO EMOJIS)
+  // Step-by-Step Process Timeline Data (Standard Core Icons NO EMOJIS)
   const processSteps = [
     {
       step: "01",
@@ -1188,13 +1188,32 @@ export default function StudyAbroad() {
                 </div>
               </div>
 
+              {/* ✅ FAIL-PROOF OPEN QUERY EMBED (NO API KEY OR PB PARAMETER NEEDED) */}
               <div className="w-full h-52 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
                 <iframe 
                   title="CareerLift Office Map"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3652.227599094801!2d90.40898531543144!3d23.73926189511977!2m3!1f0!2f0!3f0!3m2!1f0!2f0!3f0!3m2!1f1024!2i768!4f13.1!3m3!1m2!1s0x3755b8f2c68e3709%3A0x8e52e428dfbbfb8!2sBijoy%20Nagar%2C%20Dhaka!5e0!3m2!1sen!2sbd!4v1711100000000!5m2!1sen!2sbd" 
+                  src="https://maps.google.com/maps?q=Prime+Tower,+Shaheed+Nazrul+Islam+Sharak,+Bijoy+Nagar,+Dhaka&t=&z=16&ie=UTF8&iwloc=&output=embed" 
                   className="w-full h-full object-cover grayscale opacity-90 hover:grayscale-0 hover:opacity-100 transition-all duration-500" 
-                  style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+                  style={{ border: 0 }} 
+                  allowFullScreen="" 
+                  loading="lazy" 
+                  referrerPolicy="no-referrer-when-downgrade"
                 ></iframe>
+              </div>
+
+              {/* Live Map Link pointing to your updated Google link */}
+              <div className="mt-3 flex items-center justify-between bg-slate-100 px-4 py-2.5 rounded-xl border border-slate-200">
+                <span className="text-xs font-bold text-slate-700 flex items-center">
+                  📍 180–181 Prime Tower, Bijoy Nagar
+                </span>
+                <a 
+                  href="https://maps.app.goo.gl/PAuPP7wDQW79Emk49" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-xs font-black text-blue-600 hover:text-blue-800 underline flex items-center space-x-1"
+                >
+                  <span>Get Live Directions ↗</span>
+                </a>
               </div>
             </div>
 
