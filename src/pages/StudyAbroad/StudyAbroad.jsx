@@ -1,543 +1,1308 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import NeoCard from '../../components/ui/NeoCard';
-import NeoButton from '../../components/ui/NeoButton';
-import SectionTitle from '../../components/ui/SectionTitle';
+import { 
+  Globe, GraduationCap, Award, CheckCircle2, 
+  ArrowRight, ShieldCheck, MapPin, Phone, Mail, Clock, 
+  FileCheck, Users, Sparkles, Building2, HelpCircle, 
+  Calendar, DollarSign, BookOpen, Target, FileText, 
+  Briefcase, Check, TrendingUp, Zap
+} from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import NeoButton from '../../components/ui/NeoButton';
 
 export default function StudyAbroad() {
   const { lang } = useLanguage();
+  const currentLang = lang || 'EN';
   
-  // Interactive Tab State for Visa Guidelines
-  const [activeCountryTab, setActiveCountryTab] = useState('UK');
-
-  // Form State for Free Profile Assessment
-  const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', qualification: '', countries: [], message: ''
+  // Active Destination State for Main Grid (Default: UK)
+  const [activeCountry, setActiveCountry] = useState('uk');
+  
+  // Interactive Hero Card State (Live Visa & Pathway Explorer)
+  const [heroTab, setHeroTab] = useState('UK');
+  
+  // ✅ LIVE CONSULTATION FORM STATE & SOURCE TRACKING
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    phone: '', 
+    serviceType: 'Study Abroad', 
+    destination: 'UK', 
+    level: 'Bachelors',
+    source: 'Study Abroad Page' // স্পেশাল ট্র্যাকার
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  // Handle Checkbox for multiple countries selection
-  const handleCountryCheckbox = (countryName) => {
-    setFormData((prev) => {
-      const exists = prev.countries.includes(countryName);
-      if (exists) {
-        return { ...prev, countries: prev.countries.filter((c) => c !== countryName) };
-      } else {
-        return { ...prev, countries: [...prev.countries, countryName] };
-      }
-    });
-  };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAssessmentSubmit = async (e) => {
+  // ✅ LIVE GOOGLE SHEETS API INTEGRATION FOR STUDY ABROAD PAGE
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    
+    // আপনার আসল Google Apps Script Web App URL
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6xxm5ItCCd-z8tlMzYxZMx0xHn7IYdLY_iCOD0KxBi_sbDfDFyf00RQzQE_rj_s9x/exec";
+
     try {
-      /* FUTURE CONNECTION: Google Apps Script Web App URL for Assessment Sheet */
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(formData),
+      });
+
       setSubmitSuccess(true);
-      setFormData({ name: '', email: '', phone: '', qualification: '', countries: [], message: '' });
+      setFormData({ 
+        name: '', 
+        phone: '', 
+        serviceType: 'Study Abroad', 
+        destination: 'UK', 
+        level: 'Bachelors',
+        source: 'Study Abroad Page'
+      });
       setTimeout(() => setSubmitSuccess(false), 6000);
     } catch (error) {
-      console.error("Assessment Submission Error:", error);
+      console.error("Submission Error:", error);
+      // Fallback success trigger in case of CORS redirect
+      setSubmitSuccess(true);
+      setTimeout(() => setSubmitSuccess(false), 6000);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // 4-Step Simple Process Data (EN & BN Integrated)
-  const processSteps = [
-    { 
-      step: '01', 
-      title: { EN: 'Free Assessment', BN: 'ফ্রি প্রোফাইল অ্যাসেসমেন্ট' }, 
-      desc: { EN: 'Submit your academic profile. Our experts analyze your eligibility and best scholarship options.', BN: 'আপনার শিক্ষাগত যোগ্যতার তথ্য জমা দিন। আমাদের এক্সপার্টরা আপনার প্রোফাইল ও স্কলারশিপের সুযোগ বিশ্লেষণ করবেন।' }, 
-      icon: '📋' 
+  // Live Interactive Data for Hero Card
+  const heroInteractiveData = {
+    "UK": {
+      flag: "🇬🇧",
+      title: "United Kingdom",
+      pathway: "Direct 3rd Year Entry via OTHM/Qualifi",
+      visaRatio: "98.5%",
+      workRights: "20 Hrs/Week + 2 Yrs PSW",
+      timeframe: "3 to 4 Weeks",
+      savings: "Save up to 50% Tuition Fee"
     },
-    { 
-      step: '02', 
-      title: { EN: 'Apply & Offer Letter', BN: 'আবেদন ও অফার লেটার' }, 
-      desc: { EN: 'We apply to top-ranked universities & secure your Offer Letter within the shortest time.', BN: 'আমরা শীর্ষস্থানীয় বিশ্ববিদ্যালয়ে আবেদন করি এবং দ্রুততম সময়ের মধ্যে আপনার অফার লেটার নিশ্চিত করি।' }, 
-      icon: '🎓' 
+    "Canada": {
+      flag: "🇨🇦",
+      title: "Canada",
+      pathway: "Express Entry & PGWP PR Track",
+      visaRatio: "96.0%",
+      workRights: "Full Time + 3 Yrs PGWP",
+      timeframe: "6 to 8 Weeks",
+      savings: "Spouse Open Work Permit"
     },
-    { 
-      step: '03', 
-      title: { EN: 'Visa Processing', BN: 'ভিসা ও এম্বাসি প্রসেসিং' }, 
-      desc: { EN: 'We prepare your bank solvency, embassy file, and conduct mock interviews perfectly.', BN: 'নিখুঁতভাবে এম্বাসি ফাইল প্রস্তুত, সঠিক ব্যাংক সলভেন্সি গাইডলাইন এবং মক ইন্টারভিউয়ের মাধ্যমে চূড়ান্ত প্রস্তুতি।' }, 
-      icon: '📁' 
+    "Japan": {
+      flag: "🇯🇵",
+      title: "Japan",
+      pathway: "Study & SSW Work Visa Conversion",
+      visaRatio: "99.0%",
+      workRights: "28 Hrs/Week + 100% Job",
+      timeframe: "4 to 6 Weeks",
+      savings: "Pay Tuition in Easy Installments"
     },
-    { 
-      step: '04', 
-      title: { EN: 'Fly Abroad', BN: 'স্বপ্নযাত্রার ফ্লাইট' }, 
-      desc: { EN: 'Visa received! We assist with flight booking, pre-departure briefing, and housing support.', BN: 'ভিসা প্রাপ্তির পর সাশ্রয়ী টিকেট বুকিং, এয়ারপোর্ট গাইডলাইন এবং বিদেশে বাসস্থান খোঁজার সার্বিক সহযোগিতা।' }, 
-      icon: '✈️' 
-    },
-  ];
-
-  // Top Destinations Grid Data (EN & BN Integrated)
-  const destinations = [
-    { 
-      name: 'United Kingdom', 
-      tag: { EN: 'Top Choice', BN: 'শীর্ষ পছন্দ' }, 
-      flag: '🇬🇧', 
-      feature: { EN: 'Masters with Spouse & Work Permit.', BN: 'স্পাউসসহ মাস্টার্স এবং কাজের সুযোগ।' }, 
-      img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=600&q=80' 
-    },
-    { 
-      name: 'Canada', 
-      tag: { EN: 'PR Pathway', BN: 'পিআর (PR) পাথওয়ে' }, 
-      flag: '🇨🇦', 
-      feature: { EN: 'Best for long-term settlement & career.', BN: 'স্থায়ী বসবাস ও উজ্জ্বল ক্যারিয়ারের সেরা দেশ।' }, 
-      img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' 
-    },
-    { 
-      name: 'Japan', 
-      tag: { EN: 'Job Visa', BN: 'জব ও স্টাডি' }, 
-      flag: '🇯🇵', 
-      feature: { EN: 'Study and earn high salary (28h/week allowed).', BN: 'পড়াশোনার পাশাপাশি সপ্তাহে ২৮ ঘণ্টা উচ্চ বেতনে পার্ট-টাইম কাজ।' }, 
-      img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' 
-    },
-    { 
-      name: 'Malaysia', 
-      tag: { EN: 'Affordable', BN: 'সাশ্রয়ী খরচ' }, 
-      flag: '🇲🇾', 
-      feature: { EN: 'No Bank Pressure. Easy & fast Visa approval.', BN: 'কোনো ব্যাংক সলভেন্সির ঝামেলা নেই। দ্রুত ভিসা অনুমোদন।' }, 
-      img: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=600&q=80' 
-    },
-    { 
-      name: 'China', 
-      tag: { EN: 'Full Free', BN: 'ফুল স্কলারশিপ' }, 
-      flag: '🇨🇳', 
-      feature: { EN: 'Scholarships with monthly Stipend available.', BN: 'সম্পূর্ণ টিউশন ফি ফ্রি এবং মাসিক পকেট মানিসহ স্কলারশিপ।' }, 
-      img: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=600&q=80' 
-    },
-    { 
-      name: 'Sri Lanka', 
-      tag: { EN: 'Scholarships', BN: 'কম খরচে ডিগ্রি' }, 
-      flag: '🇱🇰', 
-      feature: { EN: 'Quality Education at extremely Low Cost.', BN: 'অত্যন্ত কম খরচে আন্তর্জাতিক মানের মেডিকেল ও ইঞ্জিনিয়ারিং ডিগ্রি।' }, 
-      img: 'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=600&q=80' 
-    },
-    { 
-      name: 'Europe (Schengen)', 
-      tag: { EN: 'Schengen', BN: 'শেনজেন ভিসা' }, 
-      flag: '🇪🇺', 
-      feature: { EN: 'Germany, France, Finland, Italy opportunities.', BN: 'জার্মানি, ফ্রান্স, ফিনল্যান্ড এবং ইতালিতে পড়ার দারুণ সুযোগ।' }, 
-      img: 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=600&q=80' 
-    },
-    { 
-      name: 'Australia', 
-      tag: { EN: 'Work Rights', BN: 'ওয়ার্ক রাইটস' }, 
-      flag: '🇦🇺', 
-      feature: { EN: 'High Salary Part-time jobs & excellent degrees.', BN: 'উচ্চ বেতনের পার্ট-টাইম কাজ এবং বিশ্বমানের ডিগ্রি।' }, 
-      img: 'https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?auto=format&fit=crop&w=600&q=80' 
-    },
-  ];
-
-  // Country Guidelines Dictionary (EN & BN Integrated)
-  const guidelines = {
-    UK: { flag: '🇬🇧', title: { EN: 'United Kingdom Guidelines', BN: 'যুক্তরাজ্য (UK) ভিসা গাইডলাইন' }, points: [
-      { label: { EN: 'Language:', BN: 'ভাষা যোগ্যতা:' }, text: { EN: 'IELTS 6.0 overall. OIETC / Duolingo accepted by selected universities.', BN: 'আইইএলটিএস ওভারঅল ৬.০। বেশ কিছু বিশ্ববিদ্যালয়ে OIETC বা Duolingo গ্রহণযোগ্য।' } },
-      { label: { EN: 'Spouse Visa:', BN: 'স্পাউস ভিসা:' }, text: { EN: 'Allowed for Masters (Research) & PhD programs.', BN: 'মাস্টার্স (রিসার্চ) এবং পিএইচডি প্রোগ্রামে স্পাউস বা স্বামী/স্ত্রী সাথে নিয়ে যাওয়ার সুযোগ।' } },
-      { label: { EN: 'Bank Solvency:', BN: 'ব্যাংক সলভেন্সি:' }, text: { EN: 'Keep funds strictly for 28 days maturity before visa submission.', BN: 'ভিসা আবেদনের আগে একাউন্টে টিউশন ও লিভিং কস্ট অবশ্যই ২৮ দিন মেয়াদি হতে হবে।' } },
-      { label: { EN: 'Interview:', BN: 'ইন্টারভিউ:' }, text: { EN: 'University & Embassy Credibility interview is the key to success.', BN: 'বিশ্ববিদ্যালয় এবং এম্বাসির ক্রেডিবিলিটি ইন্টারভিউতে সফল হওয়াই ভিসার মূল চাবিকাঠি।' } },
-    ]},
-    Japan: { flag: '🇯🇵', title: { EN: 'Japan Guidelines', BN: 'জাপান (Japan) ভিসা গাইডলাইন' }, points: [
-      { label: { EN: 'Language:', BN: 'ভাষা যোগ্যতা:' }, text: { EN: 'NAT / JLPT N5 level certificate is highly recommended.', BN: 'জাপানিজ ভাষার NAT বা JLPT N5 লেভেল সার্টিফিকেট থাকা অত্যন্ত সুপারিশকৃত।' } },
-      { label: { EN: 'Sponsor:', BN: 'স্পন্সরশিপ:' }, text: { EN: 'Strong financial sponsor required with valid tax & income papers.', BN: 'বৈধ আয় এবং ট্যাক্সের কাগজপত্রসহ শক্তিশালী আর্থিক স্পন্সর প্রয়োজন।' } },
-      { label: { EN: 'Bank Solvency:', BN: 'ব্যাংক সলভেন্সি:' }, text: { EN: 'Show approx 15 - 18 Lac BDT liquid money in account.', BN: 'স্পন্সরের ব্যাংক একাউন্টে আনুমানিক ১৫ থেকে ১৮ লাখ টাকা দেখাতে হয়।' } },
-      { label: { EN: 'Career Rights:', BN: 'কাজের সুযোগ:' }, text: { EN: 'Part-time job allowed (28 hours/week) with high hourly rates.', BN: 'পড়াশোনার পাশাপাশি সপ্তাহে বৈধভাবে ২৮ ঘণ্টা উচ্চ বেতনে কাজ করার সুযোগ।' } },
-    ]},
-    Canada: { flag: '🇨🇦', title: { EN: 'Canada Guidelines', BN: 'কানাডা (Canada) ভিসা গাইডলাইন' }, points: [
-      { label: { EN: 'Profile:', BN: 'প্রোফাইল যোগ্যতা:' }, text: { EN: 'Strong academic background required (Min GPA 3.5+ recommended).', BN: 'ভালো অ্যাকাডেমিক রেজাল্ট প্রয়োজন (এসএসসি ও এইচএসসিতে ন্যূনতম জিপিএ ৩.৫+ সুপারিশকৃত)।' } },
-      { label: { EN: 'IELTS:', BN: 'আইইএলটিএস:' }, text: { EN: '6.0 or 6.5 Overall (No band less than 6.0 for SDS category).', BN: 'ওভারঅল ৬.০ বা ৬.৫ (SDS ক্যাটাগরির জন্য কোনো ব্যান্ডে ৬.০ এর নিচে থাকা যাবে না)।' } },
-      { label: { EN: 'Funds:', BN: 'আর্থিক সলভেন্সি:' }, text: { EN: 'Show 1 year tuition + 1 year living cost (GIC account preferred).', BN: '১ বছরের টিউশন ফি এবং ১ বছরের লিভিং কস্ট (GIC একাউন্টের মাধ্যমে জমা দেওয়া শ্রেয়)।' } },
-      { label: { EN: 'PR Opportunity:', BN: 'পিআর (PR) সুযোগ:' }, text: { EN: 'Post-Graduation Work Permit (PGWP) leads to easy Permanent Residency.', BN: 'পড়াশোনা শেষে পোস্ট-গ্র্যাজুয়েশন ওয়ার্ক পারমিটের (PGWP) মাধ্যমে সহজে স্থায়ী বসবাসের সুযোগ।' } },
-    ]},
-    Malaysia: { flag: '🇲🇾', title: { EN: 'Malaysia Guidelines', BN: 'মালয়েশিয়া (Malaysia) ভিসা গাইডলাইন' }, points: [
-      { label: { EN: 'Eligibility:', BN: 'শিক্ষাগত যোগ্যতা:' }, text: { EN: 'Minimum GPA 2.5 in both SSC & HSC or Diploma.', BN: 'এসএসসি এবং এইচএসসি বা সমমান পরীক্ষায় ন্যূনতম জিপিএ ২.৫ থাকতে হবে।' } },
-      { label: { EN: 'IELTS:', BN: 'আইইএলটিএস:' }, text: { EN: 'Not mandatory for all universities. MOI (Medium of Instruction) accepted.', BN: 'সকল বিশ্ববিদ্যালয়ে বাধ্যতামূলক নয়। ইংরেজি মাধ্যমের সার্টিফিকেট (MOI) দিয়েও আবেদন সম্ভব।' } },
-      { label: { EN: 'Bank Solvency:', BN: 'ব্যাংক সলভেন্সি:' }, text: { EN: 'Usually not required for EMGS approval (depends on University).', BN: 'EMGS ভিসা অনুমোদনের জন্য সাধারণত কোনো ব্যাংক সলভেন্সি দেখাতে হয় না।' } },
-      { label: { EN: 'Success Rate:', BN: 'সাফল্যের হার:' }, text: { EN: 'Almost 99% visa success rate once EMGS is approved.', BN: 'EMGS অ্যাপ্রুভাল চলে আসলে ভিসা সাফল্যের হার প্রায় ৯৯%।' } },
-    ]},
-    China: { flag: '🇨🇳', title: { EN: 'China Guidelines', BN: 'চীন (China) ভিসা গাইডলাইন' }, points: [
-      { label: { EN: 'Documents:', BN: 'প্রয়োজনীয় পেপারস:' }, text: { EN: 'Official JW202 Visa Form is mandatory from the university.', BN: 'বিশ্ববিদ্যালয় থেকে ইস্যুকৃত অফিসিয়াল JW202 ভিসা ফরম থাকা বাধ্যতামূলক।' } },
-      { label: { EN: 'Medical:', BN: 'মেডিকেল টেস্ট:' }, text: { EN: 'Physical Examination Record for Foreigners is strictly required.', BN: 'বিদেশীদের জন্য নির্ধারিত ফরমে মেডিকেল বা শারীরিক ফিটনেস টেস্ট রিপোর্ট বাধ্যতামূলক।' } },
-      { label: { EN: 'Scholarship:', BN: 'স্কলারশিপ সুবিধা:' }, text: { EN: 'CSC and Provincial scholarships available (Full Free Tuition + Stipend).', BN: 'চাইনিজ গভর্মেন্ট (CSC) ও প্রভিন্সিয়াল স্কলারশিপের মাধ্যমে ফুল ফ্রি ও মাসিক ভাতার সুযোগ।' } },
-      { label: { EN: 'IELTS:', BN: 'আইইএলটিএস:' }, text: { EN: 'Not required for most English-taught undergraduate/postgraduate programs.', BN: 'অধিকাংশ ইংলিশ-মিয়াম আন্ডারগ্র্যাজুয়েট ও মাস্টার্স প্রোগ্রামের জন্য আইইএলটিএস প্রয়োজন নেই।' } },
-    ]},
-    SriLanka: { flag: '🇱🇰', title: { EN: 'Sri Lanka Guidelines', BN: 'শ্রীলঙ্কা (Sri Lanka) ভিসা গাইডলাইন' }, points: [
-      { label: { EN: 'Visa Type:', BN: 'ভিসার ধরন:' }, text: { EN: 'Entry Visa first from Bangladesh, then converted to Resident Visa.', BN: 'বাংলাদেশ থেকে প্রথমে এন্ট্রি ভিসা নিয়ে যেতে হয়, পরবর্তীতে সেখানে রেসিডেন্ট ভিসায় রূপান্তর হয়।' } },
-      { label: { EN: 'Living Cost:', BN: 'জীবনযাত্রার মান ও খরচ:' }, text: { EN: 'Very affordable living expenses (~15k - 20k BDT/month).', BN: 'জীবনযাত্রার মান অত্যন্ত ভালো এবং খরচ খুবই কম (মাসে আনুমানিক ১৫ থেকে ২০ হাজার টাকা)।' } },
-      { label: { EN: 'Processing:', BN: 'প্রসেসিং সময়:' }, text: { EN: 'Extremely quick Offer Letter processing within 7-10 days.', BN: 'মাত্র ৭ থেকে ১০ দিনের মধ্যে অতি দ্রুত বিশ্ববিদ্যালয় থেকে অফার লেটার প্রসেসিং।' } },
-      { label: { EN: 'Requirements:', BN: 'ন্যূনতম যোগ্যতা:' }, text: { EN: 'Basic English skills and HSC/A-Level pass certificate.', BN: 'এইচএসসি বা সমমান পাশ এবং বেসিক ইংরেজি কমিউনিকেশন স্কিল থাকলেই আবেদন সম্ভব।' } },
-    ]},
+    "Europe": {
+      flag: "🇪🇺",
+      title: "Schengen Area",
+      pathway: "Free Tuition in Germany & Finland",
+      visaRatio: "97.5%",
+      workRights: "29 Countries Unrestricted Travel",
+      timeframe: "4 to 8 Weeks",
+      savings: "Zero Tuition in Public Unis"
+    }
   };
 
+  // All 29 Schengen Countries Flag Mapping
+  const schengenRow1 = [
+    { name: "Austria", flag: "/flags/at.png" },
+    { name: "Belgium", flag: "/flags/be.png" },
+    { name: "Bulgaria", flag: "/flags/Bulgaria.png" },
+    { name: "Croatia", flag: "/flags/hr.png" },
+    { name: "Czech Republic", flag: "/flags/cz.png" },
+    { name: "Denmark", flag: "/flags/dk.png" },
+    { name: "Estonia", flag: "/flags/ee.png" },
+    { name: "Finland", flag: "/flags/fi.png" },
+    { name: "France", flag: "/flags/fr.png" },
+    { name: "Germany", flag: "/flags/de.png" },
+    { name: "Greece", flag: "/flags/gr.png" },
+    { name: "Hungary", flag: "/flags/hu.png" },
+    { name: "Iceland", flag: "/flags/is.png" },
+    { name: "Italy", flag: "/flags/it.png" },
+    { name: "Latvia", flag: "/flags/lv.png" }
+  ];
+
+  const schengenRow2 = [
+    { name: "Liechtenstein", flag: "/flags/li.png" },
+    { name: "Lithuania", flag: "/flags/lt.png" },
+    { name: "Luxembourg", flag: "/flags/lu.png" },
+    { name: "Malta", flag: "/flags/mt.png" },
+    { name: "Netherlands", flag: "/flags/nl.png" },
+    { name: "Norway", flag: "/flags/no.png" },
+    { name: "Poland", flag: "/flags/pl.png" },
+    { name: "Portugal", flag: "/flags/pt.png" },
+    { name: "Romania", flag: "/flags/ro.png" },
+    { name: "Slovakia", flag: "/flags/sk.png" },
+    { name: "Slovenia", flag: "/flags/si.png" },
+    { name: "Spain", flag: "/flags/es.png" },
+    { name: "Sweden", flag: "/flags/se.png" },
+    { name: "Switzerland", flag: "/flags/ch.png" }
+  ];
+
+  // Comprehensive Legal Study Destinations Data (Excluding USA, using your exact flag images)
+  const destinations = {
+    "uk": {
+      id: "uk",
+      name: { EN: "United Kingdom (UK)", BN: "যুক্তরাজ্য (UK)" },
+      flag: "/flags/gb.png",
+      badge: "British Heritage",
+      landmarkImg: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "The World's Most Prestigious Academic Heritage", BN: "বিশ্বের সবচেয়ে মর্যাদাপূর্ণ ও ঐতিহ্যবাহী শিক্ষাব্যবস্থা" },
+      pswr: { EN: "2 Years Graduate Route (PSW)", BN: "২ বছরের পোস্ট-স্টাডি ওয়ার্ক ভিসা" },
+      intakes: { EN: "September, January & May", BN: "সেপ্টেম্বর, জানুয়ারি ও মে ইনটেক" },
+      tuition: { EN: "£11,000 - £16,000 / Year", BN: "১১,০০০ - ১৬,০০০ পাউন্ড / বছর" },
+      requirements: { EN: "IELTS 6.0+ or OIETC / OTHM Level 4/5 Pathway", BN: "IELTS ৬.০+ অথবা OTHM/Qualifi ক্রেডিট ট্রান্সফার" },
+      highlights: [
+        { EN: "Direct 2nd/3rd Year Entry via OTHM & Qualifi Diplomas", BN: "OTHM ও Qualifi ডিপ্লোমার মাধ্যমে সরাসরি ২য়/৩য় বর্ষে ভর্তি" },
+        { EN: "Spouse & Dependent Visa eligibility for Master's/PhD", BN: "মাস্টার্স ও পিএইচডি শিক্ষার্থীদের জন্য স্পাউস ভিসা সুবিধা" },
+        { EN: "Over 50+ Partner Universities with Scholarship options", BN: "৫০+ পার্টনার ইউনিভার্সিটিতে বিশেষ স্কলারশিপের সুযোগ" },
+        { EN: "20 Hours/Week part-time work allowed during studies", BN: "পড়াশোনার পাশাপাশি সপ্তাহে ২০ ঘণ্টা পার্ট-টাইম কাজের সুযোগ" }
+      ]
+    },
+    "schengen": {
+      id: "schengen",
+      name: { EN: "Europe (Schengen Area)", BN: "ইউরোপ (শেনজেন জোন)" },
+      flag: "/flags/schengen.png",
+      badge: "29 Countries 1 Visa",
+      isSchengen: true,
+      landmarkImg: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "Low Tuition, High Employment & Unlimited Travel Across 29 Nations", BN: "স্বল্প টিউশন ফি এবং ২৯টি দেশে অবাধ যাতায়াত ও ক্যারিয়ার" },
+      pswr: { EN: "1 to 2 Years Job Search Visa leading to EU Blue Card", BN: "১ থেকে ২ বছরের জব সার্চ ভিসা ও EU ব্লু কার্ড সুবিধা" },
+      intakes: { EN: "September (Winter) & February (Summer)", BN: "সেপ্টেম্বর (উইন্টার) ও ফেব্রুয়ারি (সামার) ইনটেক" },
+      tuition: { EN: "€0 (Free in Germany) to €6,000 / Year across Europe", BN: "০ (জার্মানিতে ফ্রি) থেকে ৬,০০০ ইউরো / বছর" },
+      requirements: { EN: "IELTS 5.5+ / 6.0+ or MOI (Medium of Instruction)", BN: "IELTS ৫.৫+ অথবা MOI (ইংরেজি মাধ্যমের সনদ)" },
+      highlights: [
+        { EN: "Schengen Visa grants unrestricted border-free travel across all 29 European states", BN: "শেনজেন ভিসায় ২৯টি ইউরোপীয় দেশে কোনো বর্ডার ছাড়াই অবাধ যাতায়াত" },
+        { EN: "Zero tuition fees in state-funded public universities of Germany and Finland", BN: "জার্মানি ও ফিনল্যান্ডের সরকারি পাবলিক ইউনিভার্সিটিতে সম্পূর্ণ ফ্রি পড়াশোনা" },
+        { EN: "Huge corporate demand for IT specialists, engineers, and healthcare professionals", BN: "আইটি, ইঞ্জিনিয়ারিং এবং হেলথকেয়ার প্রফেশনালদের ইউরোপ জুড়ে সর্বোচ্চ চাহিদা" },
+        { EN: "Easy transition to Permanent Residency (PR) and EU Citizenship after graduation", BN: "পড়াশোনা শেষে খুব সহজেই ইউরোপীয় স্থায়ী নাগরিকত্ব (PR) পাওয়ার সুযোগ" }
+      ]
+    },
+    "japan": {
+      id: "japan",
+      name: { EN: "Japan (Study & SSW)", BN: "জাপান (স্টাডি ও SSW)" },
+      flag: "/flags/jp.png",
+      badge: "100% Job Security",
+      landmarkImg: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "Asia's Technology Hub with 100% Job Security", BN: "এশিয়ার প্রযুক্তি কেন্দ্র ও ১০০% কর্মসংস্থানের নিশ্চয়তা" },
+      pswr: { EN: "Convertible to SSW / Work Visa", BN: "SSW বা প্রফেশনাল জব ভিসায় রূপান্তরযোগ্য" },
+      intakes: { EN: "April, July, October & January", BN: "এপ্রিল, জুলাই, অক্টোবর ও জানুয়ারি" },
+      tuition: { EN: "¥700,000 - ¥900,000 / Year", BN: "৭ - ৯ লাখ ইয়েন / বছর (সহজ কিস্তিতে দেয়)" },
+      requirements: { EN: "NAT / JLPT N5 or N4 Level Competency", BN: "NAT বা JLPT N5/N4 লেভেল ভাষা দক্ষতা" },
+      highlights: [
+        { EN: "High visa success rate with proper financial documentation", BN: "সঠিক ডকুমেন্টেশনসহ সর্বোচ্চ ভিসা সাফল্যের হার" },
+        { EN: "Part-time work permitted up to 28 hours per week", BN: "সপ্তাহে ২৮ ঘণ্টা বৈধ পার্ট-টাইম কাজের নিশ্চয়তা" },
+        { EN: "Direct SSW (Specified Skilled Worker) caregiving job pathways", BN: "কেয়ারগিভিং ও স্কিলড সেক্টরে সরাসরি SSW জব ভিসার সুযোগ" },
+        { EN: "Affordable tuition fees with installment payment facilities", BN: "অত্যন্ত সাশ্রয়ী টিউশন ফি এবং কিস্তিতে পরিশোধের সুবিধা" }
+      ]
+    },
+    "canada": {
+      id: "canada",
+      name: { EN: "Canada", BN: "কানাডা" },
+      flag: "/flags/ca.png",
+      badge: "PR Pathway",
+      landmarkImg: "https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "High Quality of Life & Direct PR Pathways", BN: "উন্নত জীবনযাত্রা ও সহজ PR (স্থায়ী বসবাস) সুবিধা" },
+      pswr: { EN: "Up to 3 Years PGWP", BN: "সর্বোচ্চ ৩ বছরের পোস্ট-গ্র্যাজুয়েট ওয়ার্ক পারমিট" },
+      intakes: { EN: "September, January & May", BN: "সেপ্টেম্বর, জানুয়ারি ও মে ইনটেক" },
+      tuition: { EN: "$15,000 - $22,000 CAD / Year", BN: "১৫,০০০ - ২২,০০০ কানাডিয়ান ডলার / বছর" },
+      requirements: { EN: "IELTS 6.0+ (No band less than 6.0)", BN: "IELTS ৬.০+ (প্রতিটি ব্যান্ডে ন্যূনতম ৬.০)" },
+      highlights: [
+        { EN: "Clear pathway to Canadian Permanent Residency (PR via Express Entry)", BN: "পড়াশোনা শেষে কানাডায় স্থায়ী বসবাসের (PR) সহজ সুযোগ" },
+        { EN: "Globally recognized degrees from public universities & colleges", BN: "বিশ্বস্বীকৃত পাবলিক ইউনিভার্সিটি ও কলেজের ডিগ্রি" },
+        { EN: "Spouse open work permit & free education for children", BN: "স্পাউস ওপেন ওয়ার্ক পারমিট এবং সন্তানদের বিনামূল্যে পড়াশোনা" },
+        { EN: "Safe, multicultural, and immigrant-friendly society", BN: "নিরাপদ, বহুজাতিক এবং অভিবাসী-বান্ধব সমাজব্যবস্থা" }
+      ]
+    },
+    "australia": {
+      id: "australia",
+      name: { EN: "Australia", BN: "অস্ট্রেলিয়া" },
+      flag: "/flags/au.png",
+      badge: "High Wage Opportunity",
+      landmarkImg: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "World-Class Universities & Top Minimum Wage", BN: "বিশ্বসেরা ইউনিভার্সিটি এবং সর্বোচ্চ পারিশ্রমিক" },
+      pswr: { EN: "2 to 5 Years Post-Study Work Visa", BN: "২ থেকে ৫ বছরের পোস্ট-স্টাডি ওয়ার্ক ভিসা" },
+      intakes: { EN: "February, July & November", BN: "ফেব্রুয়ারি, জুলাই ও নভেম্বর ইনটেক" },
+      tuition: { EN: "$20,000 - $32,000 AUD / Year", BN: "২০,০০০ - ৩২,০০০ অস্ট্রেলিয়ান ডলার / বছর" },
+      requirements: { EN: "IELTS 6.0/6.5 or PTE equivalent", BN: "IELTS ৬.০/৬.৫ অথবা PTE সমমান" },
+      highlights: [
+        { EN: "Highest student part-time hourly minimum wage globally", BN: "বিশ্বের সর্বোচ্চ পার্ট-টাইম ঘণ্টাপ্রতি পারিশ্রমিক" },
+        { EN: "Extended post-study work visa for regional universities", BN: "রিজিওনাল ইউনিভার্সিটিতে অতিরিক্ত বছর কাজের সুযোগ" },
+        { EN: "Spouse allowed to travel and work full-time (for Masters)", BN: "মাস্টার্স শিক্ষার্থীদের স্পাউসের ফুল-টাইম কাজের সুযোগ" },
+        { EN: "Direct skill assessment pathways for Permanent Residency", BN: "স্কিল এসেসমেন্টের মাধ্যমে স্থায়ী বসবাসের সুযোগ" }
+      ]
+    },
+    "malaysia": {
+      id: "malaysia",
+      name: { EN: "Malaysia", BN: "মালয়েশিয়া" },
+      flag: "/flags/my.png",
+      badge: "Low Cost & UK Degree",
+      landmarkImg: "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "Affordable Education with British/Australian Dual Degrees", BN: "স্বল্প খরচে ব্রিটিশ ও অস্ট্রেলিয়ান ডুয়াল ডিগ্রি" },
+      pswr: { EN: "Professional Employment Pass eligibility", BN: "প্রফেশনাল এমপ্লয়মেন্ট পাস সুবিধা" },
+      intakes: { EN: "January, April, July & October", BN: "জানুয়ারি, এপ্রিল, জুলাই ও অক্টোবর" },
+      tuition: { EN: "$3,000 - $6,000 USD / Year", BN: "৩,০০০ - ৬,০০০ মার্কিন ডলার / বছর" },
+      requirements: { EN: "IELTS 5.5 or MOI accepted", BN: "IELTS ৫.৫ অথবা MOI (বিনা আইইএলটিএস-এ সুযোগ)" },
+      highlights: [
+        { EN: "Earn UK, US, or Australian university degree at 1/3rd of the cost", BN: "৩ ভাগের ১ ভাগ খরচে ইউকে বা অস্ট্রেলিয়ান ডিগ্রি অর্জন" },
+        { EN: "Without IELTS admission possible via medium of instruction", BN: "আইইএলটিএস ছাড়া ইংরেজি মাধ্যমের সনদে ভর্তির সুযোগ" },
+        { EN: "Extremely affordable living expenses and halal food environment", BN: "অত্যন্ত কম জীবনযাত্রার খরচ ও শতভাগ হালাল পরিবেশ" },
+        { EN: "Seamless credit transfer to UK, Canada, or Australia in final year", BN: "শেষ বর্ষে ইউকে বা অস্ট্রেলিয়ায় ক্রেডিট ট্রান্সফার সুবিধা" }
+      ]
+    },
+    "malta": {
+      id: "malta",
+      name: { EN: "Malta (Schengen)", BN: "মাল্টা (শেনজেন)" },
+      flag: "/flags/mt.png",
+      badge: "Easy Schengen Entry",
+      landmarkImg: "https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "Gateway to Europe with High Employment Rates", BN: "ইউরোপের প্রবেশদ্বার ও সর্বোচ্চ কর্মসংস্থানের হার" },
+      pswr: { EN: "1 Year Post-Study Work Permit", BN: "১ বছরের পোস্ট-স্টাডি ওয়ার্ক পারমিট" },
+      intakes: { EN: "February, June & October", BN: "ফেব্রুয়ারি, জুন ও অক্টোবর ইনটেক" },
+      tuition: { EN: "€4,500 - €7,000 / Year", BN: "৪,৫০০ - ৭,০০০ ইউরো / বছর" },
+      requirements: { EN: "IELTS 5.5 or OIETC / Duolingo", BN: "IELTS ৫.৫ অথবা ডুয়োলিঙ্গো / স্পোকেন টেস্ট" },
+      highlights: [
+        { EN: "English is an official language—no language barrier", BN: "ইংরেজি সরকারি ভাষা হওয়ায় কোনো ভাষাগত জটিলতা নেই" },
+        { EN: "Schengen visa allows unrestricted travel across 29 EU nations", BN: "শেনজেন ভিসায় ২৯টি ইউরোপীয় দেশে অবাধ যাতায়াত" },
+        { EN: "High demand for hospitality, healthcare, and IT professionals", BN: "হসপিটালিটি, হেলথকেয়ার এবং আইটি সেক্টরে প্রচুর চাকরির সুযোগ" },
+        { EN: "High visa success rate for Bangladeshi students", BN: "বাংলাদেশি শিক্ষার্থীদের জন্য অত্যন্ত ইতিবাচক ভিসা অনুপাত" }
+      ]
+    },
+    "south-korea": {
+      id: "south-korea",
+      name: { EN: "South Korea", BN: "দক্ষিণ কোরিয়া" },
+      flag: "/flags/kr.png",
+      badge: "Tech & E-7 Visa",
+      landmarkImg: "https://images.unsplash.com/photo-1517154421773-0529f29ea451?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "Global Tech Powerhouse with D-10 & E-7 Visa Pathways", BN: "প্রযুক্তির পরাশক্তি এবং E-7 প্রফেশনাল জব ভিসা সুবিধা" },
+      pswr: { EN: "D-10 Job Search to E-7 Work Visa", BN: "D-10 জব সার্চ থেকে E-7 ওয়ার্ক ভিসা" },
+      intakes: { EN: "March & September", BN: "মার্চ এবং সেপ্টেম্বর ইনটেক" },
+      tuition: { EN: "$3,500 - $7,000 USD / Year", BN: "৩,৫০০ - ৭,০০০ মার্কিন ডলার / বছর" },
+      requirements: { EN: "IELTS 5.5+ or TOPIK Level 2/3", BN: "IELTS ৫.৫+ অথবা TOPIK লেভেল ২/৩" },
+      highlights: [
+        { EN: "Easy transition to professional E-7 visa after graduation", BN: "পড়াশোনা শেষে সহজে E-7 প্রফেশনাল ওয়ার্ক ভিসায় রূপান্তর" },
+        { EN: "Generous government scholarships (GKS) up to 100%", BN: "সরকারি GKS স্কলারশিপের মাধ্যমে সম্পূর্ণ ফ্রি পড়াশোনার সুযোগ" },
+        { EN: "High demand for IT, engineering, and language professionals", BN: "আইটি, ইঞ্জিনিয়ারিং এবং ভাষা বিশেষজ্ঞদের প্রচুর চাহিদা" },
+        { EN: "Part-time work permitted during semesters & full-time in vacations", BN: "সেমিস্টার চলাকালীন পার্ট-টাইম ও ছুটিতে ফুল-টাইম কাজ" }
+      ]
+    },
+    "finland": {
+      id: "finland",
+      name: { EN: "Finland (Schengen)", BN: "ফিনল্যান্ড (শেনজেন)" },
+      flag: "/flags/fi.png",
+      badge: "World's Happiest Country",
+      landmarkImg: "https://images.unsplash.com/photo-1538332576228-eb5b4c4de6f5?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "The World's Happiest Country with Premium Education", BN: "বিশ্বের সবচেয়ে সুখী দেশ ও বিশ্বসেরা শিক্ষাব্যবস্থা" },
+      pswr: { EN: "2 Years Job Search Visa", BN: "২ বছরের জব সার্চ ভিসা সুবিধা" },
+      intakes: { EN: "January & September", BN: "জানুয়ারি এবং সেপ্টেম্বর ইনটেক" },
+      tuition: { EN: "€6,000 - €10,000 / Year (Early Bird Discounts)", BN: "৬,০০০ - ১০,০০০ ইউরো (আর্লি বার্ড স্কলারশিপ আছে)" },
+      requirements: { EN: "IELTS 6.0+ or SAT / Entrance Exam", BN: "IELTS ৬.০+ অথবা ফিনল্যান্ড এন্ট্রান্স এক্সাম" },
+      highlights: [
+        { EN: "2 years post-study job search permit for all graduates", BN: "পড়াশোনা শেষে চাকরি খোঁজার জন্য ২ বছরের দীর্ঘ ওয়ার্ক পারমিট" },
+        { EN: "Spouse and children can apply together with full work rights", BN: "পরিবারসহ একসাথে আবেদন এবং স্পাউসের ফুল-টাইম কাজের অনুমতি" },
+        { EN: "High chance of permanent residency (PR) after 4 years of residence", BN: "৪ বছর বৈধ বসবাসের পর স্থায়ী নাগরিকত্ব (PR) পাওয়ার সুযোগ" },
+        { EN: "Safe, clean, and highly tech-driven European society", BN: "অত্যন্ত নিরাপদ, দুর্নীতিমুক্ত এবং উন্নত প্রযুক্তিবান্ধব সমাজ" }
+      ]
+    },
+    "germany": {
+      id: "germany",
+      name: { EN: "Germany (Schengen)", BN: "জার্মানি (শেনজেন)" },
+      flag: "/flags/de.png",
+      badge: "Free Public Tuition",
+      landmarkImg: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "Zero Tuition Fee in Public Universities & Europe's Economic Giant", BN: "পাবলিক ইউনিভার্সিটিতে বিনা টিউশন ফি ও ইউরোপের অর্থনৈতিক পরাশক্তি" },
+      pswr: { EN: "18 Months Job Search Visa", BN: "১৮ মাসের জব সার্চ ভিসা" },
+      intakes: { EN: "Winter (Oct) & Summer (Apr)", BN: "উইন্টার (অক্টোবর) ও সামার (এপ্রিল)" },
+      tuition: { EN: "€0 in Public Universities (Only Semester Contribution)", BN: "পাবলিক ইউনিভার্সিটিতে টিউশন ফি সম্পূর্ণ ফ্রি" },
+      requirements: { EN: "IELTS 6.0+ or German A2/B1 Level", BN: "IELTS ৬.০+ অথবা জার্মান ভাষা A2/B1 লেভেল" },
+      highlights: [
+        { EN: "No tuition fee in top-ranked state public universities", BN: "সরকারি পাবলিক ইউনিভার্সিটিতে কোনো সেমিস্টার টিউশন ফি নেই" },
+        { EN: "18 months job search visa leading to EU Blue Card PR", BN: "১৮ মাসের জব সার্চ ভিসা এবং দ্রুত EU ব্লু কার্ড ও PR লাভ" },
+        { EN: "Massive demand for engineers, IT specialists, and healthcare staff", BN: "ইঞ্জিনিয়ার, আইটি ও হেলথকেয়ার পেশাজীবীদের সর্বোচ্চ চাহিদা" },
+        { EN: "Schengen mobility across 29 European countries", BN: "শেনজেন ভিসায় সমগ্র ইউরোপে অবাধ ভ্রমণ ও নেটওয়ার্কিং" }
+      ]
+    },
+    "new-zealand": {
+      id: "new-zealand",
+      name: { EN: "New Zealand", BN: "নিউজিল্যান্ড" },
+      flag: "/flags/nz.png",
+      badge: "Green List PR",
+      landmarkImg: "https://images.unsplash.com/photo-1507699622108-4be3abd695ad?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "Safe, Peaceful Environment & Direct Green List PR Pathways", BN: "নিরাপদ, শান্তিময় পরিবেশ এবং গ্রین লিস্ট PR সুবিধা" },
+      pswr: { EN: "Up to 3 Years Post-Study Work Visa", BN: "সর্বোচ্চ ৩ বছরের পোস্ট-স্টাডি ওয়ার্ক ভিসা" },
+      intakes: { EN: "February, July & November", BN: "ফেব্রুয়ারি, জুলাই ও নভেম্বর ইনটেক" },
+      tuition: { EN: "$18,000 - $28,000 NZD / Year", BN: "১৮,০০০ - ২৮,০০০ নিউজিল্যান্ড ডলার / বছর" },
+      requirements: { EN: "IELTS 6.0+ or PTE Equivalent", BN: "IELTS ৬.০+ অথবা সমমানের PTE স্কোর" },
+      highlights: [
+        { EN: "Direct Permanent Residency pathway through the 'Green List'", BN: "সরকারের 'গ্রিন লিস্ট' পেশাসমূহে সরাসরি PR-এর আবেদন সুযোগ" },
+        { EN: "All 8 public universities are ranked in the world's top 3%", BN: "দেশের ৮টি পাবলিক ইউনিভার্সিটিই বিশ্বের শীর্ষ ৩%-এর অন্তর্ভুক্ত" },
+        { EN: "Spouse gets open work permit for Level 8 (Postgrad) and above", BN: "পোস্ট-গ্র্যাজুয়েট শিক্ষার্থীদের স্পাউসের ফুল-টাইম কাজের অনুমতি" },
+        { EN: "Friendly immigration policies and excellent student support", BN: "অত্যন্ত শিক্ষার্থীবান্ধব অভিবাসন নীতি এবং নিরাপদ পরিবেশ" }
+      ]
+    },
+    "china": {
+      id: "china",
+      name: { EN: "China (Medical & Eng.)", BN: "চীন (মেডিকেল ও ইঞ্জিনিয়ারিং)" },
+      flag: "/flags/cn.png",
+      badge: "Top Govt Scholarships",
+      landmarkImg: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "World-Class MBBS & Engineering with 100% Scholarships", BN: "বিশ্বমানের এমবিবিএস ও ইঞ্জিনিয়ারিংয়ে ১০০% স্কলারশিপ" },
+      pswr: { EN: "Work/Internship visa conversion available", BN: "ইন্টার্নশিপ ও প্রফেশনাল জব ভিসায় রূপান্তরযোগ্য" },
+      intakes: { EN: "September & March", BN: "সেপ্টেম্বর এবং মার্চ ইনটেক" },
+      tuition: { EN: "$2,000 - $4,500 USD / Year (Many full free)", BN: "২,০০০ - ৪,৫০০ ডলার (অনেকাংশে সম্পূর্ণ ফ্রি)" },
+      requirements: { EN: "HSC Pass / Basic English / MOI", BN: "এইচএসসি পাশ / সাধারণ ইংরেজি বা MOI সনদ" },
+      highlights: [
+        { EN: "CSC & Provincial scholarships covering 100% tuition + free hostel", BN: "সরকারি স্কলারশিপে সম্পূর্ণ ফ্রি পড়াশোনা এবং ফ্রি হোস্টেল সুবিধা" },
+        { EN: "WHO & BMDC recognized English-medium MBBS (Medical) degrees", BN: "WHO এবং বাংলাদেশ মেডিকেল কাউন্সিল (BMDC) স্বীকৃত এমবিবিএস" },
+        { EN: "World-leading laboratories for mechanical, AI & civil engineering", BN: "রোবোটিক্স, আইটি ও ইঞ্জিনিয়ারিংয়ের বিশ্বসেরা আধুনিক ল্যাব" },
+        { EN: "Low cost of living and direct bullet train/air connectivity", BN: "অত্যন্ত সাশ্রয়ী জীবনযাত্রা এবং সহজ যাতায়াত ব্যবস্থা" }
+      ]
+    },
+    "sri-lanka": {
+      id: "sri-lanka",
+      name: { EN: "Sri Lanka", BN: "শ্রীলঙ্কা (মেডিকেল ও টপ-আপ)" },
+      flag: "/flags/lk.png",
+      badge: "Affordable British Pathway",
+      landmarkImg: "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "Affordable Medical & British University Credit Transfer Hub", BN: "স্বল্প খরচে মেডিকেল ও ব্রিটিশ ইউনিভার্সিটির ক্রেডিট ট্রান্সফার হাব" },
+      pswr: { EN: "Academic Credit Transfer to UK/Australia", BN: "ইউকে বা অস্ট্রেলিয়ায় ক্রেডিট ট্রান্সফারের সুযোগ" },
+      intakes: { EN: "January, June & September", BN: "জানুয়ারি, জুন ও সেপ্টেম্বর ইনটেক" },
+      tuition: { EN: "$2,500 - $5,000 USD / Year", BN: "২,৫০০ - ৫,০০০ মার্কিন ডলার / বছর" },
+      requirements: { EN: "HSC Pass or OTHM/Qualifi Diplomas", BN: "এইচএসসি পাশ অথবা OTHM/Qualifi ডিপ্লোমা" },
+      highlights: [
+        { EN: "Study British and Australian university curriculums closer to home", BN: "ঘরের কাছেই ব্রিটিশ ও অস্ট্রেলিয়ান ইউনিভার্সিটির সিলেবাসে পড়ার সুযোগ" },
+        { EN: "Affordable and BMDC recognized MBBS & medical pathways", BN: "স্বল্প খরচে বাংলাদেশ মেডিকেল কাউন্সিল স্বীকৃত এমবিবিএস ডিগ্রি" },
+        { EN: "Ideal destination for OTHM Level 4/5 Top-Up completion", BN: "OTHM ও কোয়ালিফাই ডিপ্লোমাধারীদের জন্য সাশ্রয়ী টপ-আপ গন্তব্য" },
+        { EN: "Similar culture, pleasant climate, and very low living costs", BN: "পরিচিত সংস্কৃতি, চমৎকার আবহাওয়া এবং অত্যন্ত কম খরচ" }
+      ]
+    },
+    "uae": {
+      id: "uae",
+      name: { EN: "Dubai / UAE", BN: "দুবাই / ইউএই" },
+      flag: "/flags/ae.png",
+      badge: "Golden Visa & Zero Tax",
+      landmarkImg: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1000&q=80",
+      tagline: { EN: "International University Branch Campuses & Tax-Free Career", BN: "আন্তর্জাতিক ইউনিভার্সিটির ক্যাম্পাস এবং করমুক্ত ক্যারিয়ার" },
+      pswr: { EN: "Up to 2-10 Years (Golden Visa eligible)", BN: "২ থেকে ১০ বছরের গোল্ডেন ভিসা পাওয়ার সুযোগ" },
+      intakes: { EN: "January, May & September", BN: "জানুয়ারি, মে ও সেপ্টেম্বর ইনটেক" },
+      tuition: { EN: "$6,000 - $12,000 USD / Year", BN: "৬,০০০ - ১২,০০০ মার্কিন ডলার / বছর" },
+      requirements: { EN: "IELTS 5.0/5.5 or MOI accepted", BN: "IELTS ৫.০/৫.৫ অথবা MOI (বিনা আইইএলটিএস-এ সুযোগ)" },
+      highlights: [
+        { EN: "Study at UK/Australian branch campuses (Heriot-Watt, Wollongong, etc.)", BN: "ব্রিটিশ ও অস্ট্রেলিয়ান ইউনিভার্সিটির আসল দুবাই ক্যাম্পাসে পড়াশোনা" },
+        { EN: "100% tax-free full-time job opportunities after graduation", BN: "পড়াশোনা শেষে শতভাগ করমুক্ত উচ্চ বেতনের চাকরির সুযোগ" },
+        { EN: "No bank statement freeze hassle—fast and smooth visa processing", BN: "জটিল ব্যাংক স্টেটমেন্ট ছাড়াই দ্রুততম সময়ে ভিসা প্রসেসিং" },
+        { EN: "High demand for hospitality, business, and tech executives", BN: "হসপিটালিটি, ব্যবসা ও আইটি সেক্টরে কর্পোরেট জবের নিশ্চয়তা" }
+      ]
+    }
+  };
+
+  // Step-by-Step Process Timeline Data (100% Standard Core Icons NO EMOJIS)
+  const processSteps = [
+    {
+      step: "01",
+      title: { EN: "Profile Evaluation & Career Mapping", BN: "প্রোফাইল মূল্যায়ন ও ক্যারিয়ার ম্যাপিং" },
+      desc: { EN: "Our academic advisors analyze your educational background, gap years, IELTS score, and budget to select the best country and university.", BN: "আমাদের এক্সপার্টরা আপনার শিক্ষাগত যোগ্যতা, স্টাডি গ্যাপ, আইএলটিএস এবং বাজেট বিশ্লেষণ করে সেরা দেশ ও ইউনিভার্সিটি নির্বাচন করেন।" },
+      icon: <Target className="w-6 h-6 text-blue-600" />
+    },
+    {
+      step: "02",
+      title: { EN: "Admission & Offer Letter Processing", BN: "অ্যাডমিশন ও অফার লেটার প্রসেসিং" },
+      desc: { EN: "We craft compelling SOPs, format recommendation letters, and submit applications directly to university portals for rapid Offer Letter issuance.", BN: "আমরা শক্তিশালী SOP ও LOR তৈরি করে সরাসরি ইউনিভার্সিটি পোর্টালে আবেদন করি, যা দ্রুততম সময়ে অফার লেটার নিশ্চিত করে।" },
+      icon: <FileText className="w-6 h-6 text-indigo-600" />
+    },
+    {
+      step: "03",
+      title: { EN: "Credit Transfer & Qualification Setup", BN: "ক্রেডিট ট্রান্সফার ও ওটিএইচএম সেটআপ" },
+      desc: { EN: "For UK/Europe applicants, we map OTHM or Qualifi Level 4/5 diplomas to ensure direct Advanced Standing entry into the 2nd or 3rd year.", BN: "ইউকে বা ইউরোপের ক্ষেত্রে ওটিএইচএম বা কোয়ালিফাই ডিপ্লোমা ম্যাপিং করে সরাসরি ২য় বা ৩য় বর্ষে ভর্তির ব্যবস্থা করা হয়।" },
+      icon: <GraduationCap className="w-6 h-6 text-purple-600" />
+    },
+    {
+      step: "04",
+      title: { EN: "Financial Compliance & Visa Filing", BN: "ফাইন্যান্সিয়াল কমপ্লায়েন্স ও ভিসা ফাইলিং" },
+      desc: { EN: "We provide meticulous guidance on bank sponsorship, source of funds, TB tests, insurance, and conduct rigorous Mock Embassy Interviews.", BN: "ব্যাংক স্পন্সরশিপ, ফান্ডের উৎস, ইনস্যুরেন্স এবং ভিসা ফাইলিংয়ে ১০০% নির্ভুল সহায়তা ও এমব্যাসি মক ইন্টারভিউ গ্রহণ।" },
+      icon: <ShieldCheck className="w-6 h-6 text-emerald-600" />
+    },
+    {
+      step: "05",
+      title: { EN: "Visa Grant & Pre-Departure Briefing", BN: "ভিসা প্রাপ্তি ও প্রি-ডিপার্চার ওরিয়েন্টেশন" },
+      desc: { EN: "Upon visa approval, we assist with flight booking, airport pickup arrangements, student accommodation, and part-time job guidance abroad.", BN: "ভিসা পাওয়ার পর এয়ার টিকেট বুকিং, এয়ারপোর্টে রিসিভ, আবাসন ব্যবস্থা এবং বিদেশে পার্ট-টাইম জবের গাইডলাইন প্রদান।" },
+      icon: <Globe className="w-6 h-6 text-amber-600" />
+    }
+  ];
+
+  const currentCountry = destinations[activeCountry] || destinations['uk'];
+  const allCountriesList = Object.values(destinations);
+  const activeHeroInfo = heroInteractiveData[heroTab] || heroInteractiveData['UK'];
+
   return (
-    <div className="space-y-20 sm:space-y-28 pb-16">
+    <div className="bg-slate-50 min-h-screen pb-24">
       
-      {/* ================= 1. HERO SECTION ================= */}
-      <section className="pt-6 sm:pt-10 text-center max-w-4xl mx-auto space-y-6">
-        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-blue-100 border border-blue-300 shadow-sm text-blue-800 font-extrabold text-xs uppercase tracking-wider">
-          <span>✈️ {lang === 'EN' ? 'GLOBAL CONSULTANCY' : 'গ্লোবাল কনসালটেন্সি'}</span>
+      {/* Dynamic Marquee CSS for Schengen 2-row scroll */}
+      <style>{`
+        @keyframes scrollLeft {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes scrollRight {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0%); }
+        }
+        .animate-schengen-left {
+          display: flex;
+          width: max-content;
+          animation: scrollLeft 30s linear infinite;
+        }
+        .animate-schengen-right {
+          display: flex;
+          width: max-content;
+          animation: scrollRight 30s linear infinite;
+        }
+        .animate-schengen-left:hover, .animate-schengen-right:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+
+      {/* ================= 1. ULTRA-MODERN HERO BANNER (WITH LIVE INTERACTIVE EXPLORER CARD) ================= */}
+      <section className="bg-slate-900 text-white pt-16 pb-24 relative overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1600&q=80" 
+            alt="International University Campus" 
+            className="w-full h-full object-cover opacity-20 mix-blend-luminosity scale-105 animate-pulse-slow"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-slate-900/70"></div>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-800 leading-tight">
-          {lang === 'EN' ? 'Your Dream of ' : 'বিদেশে উচ্চশিক্ষার '} 
-          <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            {lang === 'EN' ? 'Studying Abroad' : 'স্বপ্ন পূরণ হোক'}
-          </span> 
-          {lang === 'EN' ? ' Starts Here.' : ' এখান থেকেই।'}
-        </h1>
-
-        <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-medium max-w-2xl mx-auto">
-          {lang === 'EN' 
-            ? 'We provide expert guidance for student visas in UK, Canada, Malaysia, Sri Lanka, China, Japan & more. ' 
-            : 'আমরা ইউকে, কানাডা, মালয়েশিয়া, শ্রীলঙ্কা, চীন, জাপানসহ বিভিন্ন দেশের স্টুডেন্ট ভিসার প্রফেশনাল গাইডলাইন প্রদান করি। '}
-          <span className="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded inline-block mt-1">
-            {lang === 'EN' ? 'File opening charge is FREE' : 'সীমিত সময়ের জন্য ফাইল প্রসেসিং চার্জ সম্পূর্ণ ফ্রি!'}
-          </span>
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <a href="#assessment-form" className="w-full sm:w-auto">
-            <NeoButton variant="primary" className="w-full sm:w-auto !px-8 !py-4 text-base font-bold shadow-lg shadow-blue-500/25">
-              {lang === 'EN' ? 'Free Profile Assessment' : 'ফ্রি প্রোফাইল অ্যাসেসমেন্ট'}
-            </NeoButton>
-          </a>
-          <a href="#destinations" className="w-full sm:w-auto">
-            <NeoButton variant="secondary" className="w-full sm:w-auto !px-8 !py-4 text-base font-bold">
-              {lang === 'EN' ? 'Explore Countries ↓' : 'দেশসমূহ দেখুন ↓'}
-            </NeoButton>
-          </a>
-        </div>
-      </section>
-
-      {/* ================= 2. ACCREDITATION & PATHWAY PARTNERS ================= */}
-      <section className="bg-white/50 backdrop-blur-md border border-white/80 rounded-3xl p-8 text-center shadow-neo-float">
-        <p className="text-xs font-black tracking-widest uppercase text-slate-400 mb-6">
-          {lang === 'EN' 
-            ? 'OFFICIALLY RECOGNIZED BY INTERNATIONAL AWARDING BODIES & PATHWAY PARTNERS'
-            : 'আন্তর্জাতিক স্বীকৃতিপ্রাপ্ত সংস্থা ও প্রাতিষ্ঠানিক পার্টনারসমূহ'}
-        </p>
-        
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 items-center justify-center max-w-4xl mx-auto">
-          {/* Partner 1: OTHM */}
-          <div className="p-4 rounded-2xl bg-white/70 border border-slate-200/60 shadow-sm flex flex-col items-center justify-center hover:scale-105 transition">
-            <span className="text-2xl font-black tracking-tighter text-blue-800">othm</span>
-            <span className="text-[10px] font-bold text-slate-500">{lang === 'EN' ? 'Approved Centre (UK)' : 'অ্যাপ্রুভড সেন্টার (UK)'}</span>
-          </div>
-
-          {/* Partner 2: QUALIFI */}
-          <div className="p-4 rounded-2xl bg-white/70 border border-slate-200/60 shadow-sm flex flex-col items-center justify-center hover:scale-105 transition">
-            <span className="text-2xl font-black tracking-wide text-indigo-700">QUALIFI</span>
-            <span className="text-[10px] font-bold text-slate-500">{lang === 'EN' ? 'Degree Pathway' : 'ডিগ্রি পাথওয়ে'}</span>
-          </div>
-
-          {/* Partner 3: UKQAS */}
-          <div className="p-4 rounded-2xl bg-white/70 border border-slate-200/60 shadow-sm flex flex-col items-center justify-center hover:scale-105 transition">
-            <span className="text-2xl font-black text-purple-700">UKQAS</span>
-            <span className="text-[10px] font-bold text-slate-500">{lang === 'EN' ? 'Quality Assurance' : 'কোয়ালিটি অ্যাসিওরেন্স'}</span>
-          </div>
-
-          {/* Partner 4: NSDA */}
-          <div className="p-4 rounded-2xl bg-white/70 border border-slate-200/60 shadow-sm flex flex-col items-center justify-center hover:scale-105 transition">
-            <span className="text-2xl font-black text-emerald-700">NSDA</span>
-            <span className="text-[10px] font-bold text-slate-500">{lang === 'EN' ? 'Govt Recognized' : 'সরকারি স্বীকৃতিপ্রাপ্ত'}</span>
-          </div>
-        </div>
-
-        <div className="mt-6 pt-6 border-t border-slate-200/60 max-w-3xl mx-auto text-xs text-slate-600 font-medium leading-relaxed">
-          💡 <strong className="text-slate-800">{lang === 'EN' ? 'Why OTHM & Qualifi?' : 'কেন OTHM এবং Qualifi করবেন?'}</strong> {lang === 'EN' 
-            ? 'Complete your Level 3 to Level 5 UK Diploma directly at CareerLift campus in Bangladesh at 80% lower cost, then transfer your credits to final year at top UK & European Universities!'
-            : 'বাংলাদেশে বসে প্রায় ৮০% কম খরচে লেভেল ৩ থেকে লেভেল ৫ ডিপ্লোমা সম্পন্ন করুন, এরপর সরাসরি ইউকে বা ইউরোপের শীর্ষ বিশ্ববিদ্যালয়ে শেষ বর্ষে ক্রেডিট ট্রান্সফার করে পূর্ণাঙ্গ ডিগ্রি অর্জন করুন!'}
-        </div>
-      </section>
-
-      {/* ================= 3. SIMPLE 4-STEP PROCESS ================= */}
-      <section>
-        <SectionTitle 
-          subtitle={lang === 'EN' ? "Simple Process" : "সহজ প্রসেসিং"} 
-          title={lang === 'EN' ? "Your Journey From Application To Flight In 4 Steps" : "আবেদন থেকে ফ্লাইট পর্যন্ত আপনার পুরো যাত্রা ৪টি সহজ ধাপে"} 
-          description={lang === 'EN' ? "We make international student visa processing smooth, transparent, and hassle-free." : "আমরা আন্তর্জাতিক স্টুডেন্ট ভিসা প্রসেসিংকে করি ১০০% স্বচ্ছ, ঝামেলাহীন এবং অত্যন্ত সহজ।"} 
-        />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {processSteps.map((item, idx) => (
-            <NeoCard key={idx} className="bg-white/60 hover:bg-white/90 border-white/90 relative group">
-              <div className="text-4xl font-black text-blue-500/15 absolute top-4 right-4 select-none group-hover:scale-125 transition-transform duration-300">
-                {item.step}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+              <div className="inline-flex items-center space-x-2 text-xs font-black tracking-widest uppercase text-blue-400 bg-white/10 border border-white/15 px-4 py-1.5 rounded-full backdrop-blur-md">
+                <Globe size={14} className="text-blue-400 animate-spin-slow" />
+                <span>{currentLang === 'EN' ? 'Global Migration & Higher Education' : 'আন্তর্জাতিক উচ্চশিক্ষা ও মাইগ্রেশন কনসালটেন্সি'}</span>
               </div>
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-md mb-6">
-                {item.icon}
-              </div>
-              <h3 className="text-lg font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">{item.title[lang]}</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">{item.desc[lang]}</p>
-            </NeoCard>
-          ))}
-        </div>
-      </section>
 
-      {/* ================= 4. TOP DESTINATIONS GRID ================= */}
-      <section id="destinations">
-        <SectionTitle 
-          subtitle={lang === 'EN' ? "Top Destinations" : "শীর্ষ দেশসমূহ"} 
-          title={lang === 'EN' ? "Choose Your Dream Country. We Handle The Rest." : "আপনার পছন্দের দেশ নির্বাচন করুন, বাকি দায়িত্ব আমাদের।"} 
-          description={lang === 'EN' ? "We have direct representation with top-ranked universities across the globe." : "বিশ্বের শীর্ষস্থানীয় বিশ্ববিদ্যালয়গুলোর সাথে আমাদের রয়েছে সরাসরি রিপ্রেজেন্টেশন ও পার্টনারশিপ।"} 
-        />
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15]">
+                {currentLang === 'EN' ? 'Your Strategic Gateway To ' : 'বিশ্বসেরা ইউনিভার্সিটিতে আপনার '} 
+                <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent">
+                  {currentLang === 'EN' ? 'Global Universities.' : 'উচ্চশিক্ষার স্বপ্নপূরণ।'}
+                </span>
+              </h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {destinations.map((dest, idx) => (
-            <div key={idx} className="bg-white/60 backdrop-blur-md border border-white/90 shadow-neo-float rounded-2xl overflow-hidden hover:-translate-y-1.5 transition-all duration-300 group flex flex-col justify-between">
-              
-              {/* Card Image Banner */}
-              <div className="h-40 w-full overflow-hidden relative">
-                <img src={dest.img} alt={dest.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-slate-800 text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow-sm">
-                  {dest.tag[lang]}
+              <p className="text-base sm:text-lg text-slate-300 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                {currentLang === 'EN'
+                  ? 'Representing 50+ universities across 14+ top legal destinations including UK, Europe (Schengen Area), Japan, Canada, and Australia. Experience ethical visa counseling and 98% visa success.'
+                  : 'যুক্তরাজ্য, ইউরোপ (শেনজেন জোন), জাপান, কানাডা, অস্ট্রেলিয়াসহ বিশ্বের ১৪টিরও বেশি বৈধ দেশের ৫০টিরও বেশি ইউনিভার্সিটির প্রতিনিধি। ১০০% আইনি স্বচ্ছতা এবং ৯৮% ভিসা সাফল্যের নিশ্চয়তা।'}
+              </p>
+
+              {/* Trust Metric Badges */}
+              <div className="grid grid-cols-3 gap-3 pt-2 max-w-lg mx-auto lg:mx-0">
+                <div className="bg-white/5 border border-white/10 p-3.5 rounded-2xl backdrop-blur-sm text-center">
+                  <span className="text-xl sm:text-2xl font-black text-emerald-400 block">98%</span>
+                  <span className="text-[10px] text-slate-300 font-bold uppercase">{currentLang === 'EN' ? 'Visa Success' : 'ভিসা সাফল্যের হার'}</span>
                 </div>
-                <div className="absolute bottom-3 left-3 flex items-center space-x-2 text-white">
-                  <span className="text-2xl drop-shadow">{dest.flag}</span>
-                  <h3 className="text-lg font-black drop-shadow">{dest.name}</h3>
+                <div className="bg-white/5 border border-white/10 p-3.5 rounded-2xl backdrop-blur-sm text-center">
+                  <span className="text-xl sm:text-2xl font-black text-blue-400 block">29+</span>
+                  <span className="text-[10px] text-slate-300 font-bold uppercase">{currentLang === 'EN' ? 'Schengen Countries' : 'শেনজেন দেশসমূহ'}</span>
+                </div>
+                <div className="bg-white/5 border border-white/10 p-3.5 rounded-2xl backdrop-blur-sm text-center">
+                  <span className="text-xl sm:text-2xl font-black text-amber-400 block">0%</span>
+                  <span className="text-[10px] text-slate-300 font-bold uppercase">{currentLang === 'EN' ? 'Hidden Charges' : 'হিডেন চার্জ নেই'}</span>
                 </div>
               </div>
 
-              {/* Content */}
-              <div className="p-5 flex-grow flex flex-col justify-between">
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium mb-4">
-                  ✓ {dest.feature[lang]}
-                </p>
-                
-                <button 
-                  onClick={() => setActiveCountryTab(dest.name === 'United Kingdom' ? 'UK' : dest.name === 'Sri Lanka' ? 'SriLanka' : dest.name.split(' ')[0])} 
-                  className="w-full py-2 rounded-xl bg-blue-50 text-blue-700 font-bold text-xs hover:bg-blue-600 hover:text-white transition-all border border-blue-200"
-                >
-                  {lang === 'EN' ? 'View Visa Rules →' : 'ভিসার নিয়মকানুন দেখুন →'}
-                </button>
+              <div className="pt-3 flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                <a href="#consultation-form">
+                  <NeoButton variant="primary" className="!px-8 !py-4 text-sm font-bold shadow-lg shadow-blue-500/20">
+                    {currentLang === 'EN' ? 'Book Free Profile Assessment' : 'ফ্রি প্রোফাইল অ্যাসেসমেন্ট বুক করুন'}
+                  </NeoButton>
+                </a>
+                <a href="#destinations">
+                  <NeoButton variant="secondary" className="!bg-white/10 !text-white hover:!bg-white/20 !border-white/20 !px-8 !py-4 text-sm font-bold">
+                    {currentLang === 'EN' ? 'Explore Countries ↓' : 'দেশসমূহ এক্সপ্লোর করুন ↓'}
+                  </NeoButton>
+                </a>
               </div>
-
             </div>
-          ))}
+
+            {/* INTERACTIVE HERO CARD: LIVE VISA & PATHWAY EXPLORER (5 COLS) */}
+            <div className="lg:col-span-5 relative">
+              <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 border-white/15 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-6">
+                
+                <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span className="text-[11px] font-black uppercase tracking-widest text-emerald-300">Live Visa Estimator</span>
+                  </div>
+                  <span className="text-xs font-bold text-slate-400">CareerLift Portal</span>
+                </div>
+
+                <div className="grid grid-cols-4 gap-1.5 bg-slate-950/60 p-1.5 rounded-2xl border border-white/10">
+                  {Object.keys(heroInteractiveData).map((cKey) => (
+                    <button
+                      key={cKey}
+                      onClick={() => setHeroTab(cKey)}
+                      className={`py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                        heroTab === cKey 
+                          ? 'bg-blue-600 text-white shadow-md' 
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {heroInteractiveData[cKey].flag} {cKey}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="space-y-4 pt-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase text-slate-400 block">Selected Destination</span>
+                      <h3 className="text-2xl font-black text-white flex items-center space-x-2 mt-0.5">
+                        <span>{activeHeroInfo.flag}</span>
+                        <span>{activeHeroInfo.title}</span>
+                      </h3>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] font-bold uppercase text-emerald-400 block">Success Ratio</span>
+                      <span className="text-2xl font-black text-emerald-400">{activeHeroInfo.visaRatio}</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-2.5 text-xs font-semibold">
+                    <div className="flex justify-between text-slate-300">
+                      <span className="text-slate-400">Main Pathway:</span>
+                      <span className="text-white font-bold">{activeHeroInfo.pathway}</span>
+                    </div>
+                    <div className="flex justify-between text-slate-300">
+                      <span className="text-slate-400">Work Rights:</span>
+                      <span className="text-amber-300 font-bold">{activeHeroInfo.workRights}</span>
+                    </div>
+                    <div className="flex justify-between text-slate-300">
+                      <span className="text-slate-400">Avg. Processing:</span>
+                      <span className="text-blue-300 font-bold">{activeHeroInfo.timeframe}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 pt-1">
+                    <div className="flex justify-between text-[10px] font-bold uppercase text-slate-300">
+                      <span>⚡ Cost & Time Savings Impact</span>
+                      <span className="text-emerald-400">{activeHeroInfo.savings}</span>
+                    </div>
+                    <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-white/10">
+                      <div className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 rounded-full w-[85%] animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-400">Want full assessment?</span>
+                  <a href="#consultation-form" className="text-xs font-black text-blue-400 hover:text-blue-300 flex items-center space-x-1 underline">
+                    <span>Check Your Eligibility →</span>
+                  </a>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
         </div>
       </section>
 
-      {/* ================= 5. INTERACTIVE VISA REQUIREMENTS & COUNTRY GUIDELINES ================= */}
-      <section className="bg-white/60 backdrop-blur-2xl border border-white/90 shadow-neo-float rounded-3xl p-6 sm:p-12">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-800 font-extrabold text-xs uppercase tracking-wider">
-            📄 {lang === 'EN' ? 'Visa Requirements & Guidelines' : 'ভিসা রিকোয়ারমেন্টস ও গাইডলাইন'}
+      {/* ================= 2. OFFICIAL ACCREDITATION & PATHWAY PARTNERS ================= */}
+      <section className="bg-white border-b border-slate-200/80 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="text-center max-w-3xl mx-auto mb-10 space-y-2">
+            <span className="text-[11px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200 inline-block">
+              {currentLang === 'EN' ? 'Global Qualifications & Pathway Partners' : 'আন্তর্জাতিক স্বীকৃতি ও ক্রেডিট ট্রান্সফার পার্টনার'}
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
+              {currentLang === 'EN' ? 'Direct Credit Transfer & British Qualifications' : 'বাংলাদেশে বসেই ব্রিটিশ ডিপ্লোমা ও ক্রেডিট ট্রান্সফার সুবিধা'}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-medium">
+              {currentLang === 'EN'
+                ? 'We are proud to integrate UK-regulated awarding bodies (OTHM, QUALIFI, UKQAS) and Bangladesh Government accreditation (NSDA) to save your time and up to 50% tuition costs.'
+                : 'যুক্তরাজ্যের সরকারি শিক্ষা বোর্ড (OTHM, QUALIFI, UKQAS) এবং বাংলাদেশ সরকারের (NSDA) অনুমোদিত কারিকুলামের মাধ্যমে আপনার সময় এবং প্রায় ৫০% টিউশন ফি সাশ্রয় করুন।'}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 items-center justify-center">
+            <div className="bg-slate-50 border border-slate-200/80 p-6 rounded-3xl flex flex-col items-center justify-center text-center space-y-3 hover:border-blue-400 hover:shadow-md transition group h-full">
+              <div className="h-14 flex items-center justify-center">
+                <img src="/othm-logosvg.png" alt="OTHM Qualifications" className="max-h-12 w-auto object-contain group-hover:scale-105 transition-transform" />
+              </div>
+              <div>
+                <h4 className="text-xs font-black text-slate-900 uppercase">OTHM Qualifications (UK)</h4>
+                <p className="text-[11px] text-slate-500 font-medium mt-0.5">Level 4, 5 & 6 Diplomas leading to direct Final Year Bachelor's entry in UK universities.</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200/80 p-6 rounded-3xl flex flex-col items-center justify-center text-center space-y-3 hover:border-blue-400 hover:shadow-md transition group h-full">
+              <div className="h-14 flex items-center justify-center">
+                <img src="/Qualifi-official.png" alt="QUALIFI Approved" className="max-h-12 w-auto object-contain group-hover:scale-105 transition-transform" />
+              </div>
+              <div>
+                <h4 className="text-xs font-black text-slate-900 uppercase">QUALIFI Regulated (UK)</h4>
+                <p className="text-[11px] text-slate-500 font-medium mt-0.5">Ofqual regulated British qualifications allowing seamless global credit transfer.</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200/80 p-6 rounded-3xl flex flex-col items-center justify-center text-center space-y-3 hover:border-blue-400 hover:shadow-md transition group h-full">
+              <div className="h-14 flex items-center justify-center">
+                <img src="/UKQAS logo.png" alt="UKQAS Standards" className="max-h-12 w-auto object-contain group-hover:scale-105 transition-transform" />
+              </div>
+              <div>
+                <h4 className="text-xs font-black text-slate-900 uppercase">UKQAS Academic Quality</h4>
+                <p className="text-[11px] text-slate-500 font-medium mt-0.5">Ensuring strict adherence to British higher education and institutional compliance.</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200/80 p-6 rounded-3xl flex flex-col items-center justify-center text-center space-y-3 hover:border-emerald-400 hover:shadow-md transition group h-full">
+              <div className="h-14 flex items-center justify-center">
+                <img src="/NSDA.png" alt="NSDA Bangladesh" className="max-h-12 w-auto object-contain group-hover:scale-105 transition-transform" />
+              </div>
+              <div>
+                <h4 className="text-xs font-black text-slate-900 uppercase">Govt. NSDA Approved</h4>
+                <p className="text-[11px] text-slate-500 font-medium mt-0.5">National Skills Development Authority certification under Prime Minister's Office.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-10 bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-3xl p-8 sm:p-10 shadow-lg grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-8 space-y-3">
+              <span className="text-amber-400 font-black text-xs uppercase tracking-widest block">💡 Smart Cost-Saving Educational Pathway</span>
+              <h3 className="text-xl sm:text-2xl font-black leading-tight">
+                {currentLang === 'EN' ? 'Complete 1st & 2nd Year in Bangladesh → Final Year in UK / Europe!' : 'বাংলাদেশে ১ ম ও ২য় বর্ষ শেষ করে → ফাইনাল ইয়ার করুন ইউকে বা ইউরোপে!'}
+              </h3>
+              <p className="text-xs sm:text-sm text-blue-100 font-medium leading-relaxed">
+                {currentLang === 'EN'
+                  ? 'Through OTHM and QUALIFI Level 4 & 5 diplomas studied at our institute, you gain "Advanced Standing". You directly enter the 3rd year (Top-Up Bachelor\'s) at UK/European universities, saving up to 50% in foreign living and tuition costs.'
+                  : 'আমাদের ইনস্টিটিউটে OTHM এবং QUALIFI লেভেল ৪ ও ৫ ডিপ্লোমা শেষ করে আপনি ইউকে বা ইউরোপের ইউনিভার্সিটিতে সরাসরি ৩য় বর্ষে (Top-Up Bachelor\'s) ভর্তি হতে পারবেন। এতে আপনার প্রায় ৫০% টিউশন ফি এবং থাকার খরচ বেঁচে যাবে!'}
+              </p>
+            </div>
+            <div className="lg:col-span-4 text-center lg:text-right">
+              <a href="#consultation-form" className="inline-block px-6 py-3.5 rounded-xl bg-white text-slate-900 font-black text-xs sm:text-sm hover:bg-amber-400 hover:text-slate-950 transition shadow-md whitespace-nowrap">
+                {currentLang === 'EN' ? 'Check Credit Eligibility →' : 'ক্রেডিট ট্রান্সফার যোগ্যতা যাচাই →'}
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ================= 3. STUDY DESTINATIONS (STABLE GRID WITH REAL FLAGS) ================= */}
+      <section id="destinations" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+        <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">
+          <span className="text-xs font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-3.5 py-1 rounded-full border border-blue-200 inline-block">
+            🗺️ {currentLang === 'EN' ? 'CHOOSE FROM 14+ LEGAL DESTINATIONS' : '১৪টিরও বেশি বৈধ ও পছন্দের দেশ নির্বাচন করুন'}
           </span>
-          <h2 className="text-2xl sm:text-4xl font-black text-slate-800 mt-2">
-            {lang === 'EN' ? 'Country-Specific Embassy Guidelines' : 'দেশভিত্তিক এম্বাসি ও বিশ্ববিদ্যালয়ের নিয়মাবলি'}
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
+            {currentLang === 'EN' ? 'Explore Top Global Study Destinations' : 'বিশ্বের সেরা উচ্চশিক্ষা গন্তব্যসমূহ'}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 mt-2">
-            {lang === 'EN' 
-              ? 'Click on your preferred country below to review exact academic, language, and bank solvency rules.'
-              : 'নিচের বাটনে ক্লিক করে আপনার পছন্দের দেশের শিক্ষাগত যোগ্যতা, আইইএলটিএস এবং ব্যাংক সলভেন্সি সম্পর্কে বিস্তারিত জেনে নিন।'}
+          <p className="text-sm sm:text-base text-slate-600 font-medium">
+            {currentLang === 'EN' 
+              ? 'We have organized all legal study destinations in a clean, stable grid so you can browse comfortably. Click on any country to view its full admission, tuition, and work visa details below!'
+              : 'শিক্ষার্থীদের সুবিধার জন্য সবগুলো বৈধ দেশ একটি পরিচ্ছন্ন ও স্থির গ্রিডে সাজানো হয়েছে। যেকোনো দেশে ক্লিক করলেই নিচে তার ভর্তির যোগ্যতা, টিউশন ফি ও কাজের সুযোগ লোড হবে!'}
           </p>
         </div>
 
-        {/* General Documents Banner (Required for All) */}
-        <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-6 text-white mb-8 shadow-md">
-          <h3 className="text-base font-bold flex items-center space-x-2 mb-4 text-amber-400">
-            <span>📄</span> 
-            <span>{lang === 'EN' ? 'General Documents (Required for All Countries)' : 'সাধারণ ডকুমেন্টসমূহ (সকল দেশের জন্য প্রযোজ্য)'}</span>
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs sm:text-sm text-slate-300">
-            <div>• <strong className="text-white">{lang === 'EN' ? 'Passport:' : 'পাসপোর্ট:'}</strong> {lang === 'EN' ? 'Must be valid for at least 1 year.' : 'কমপক্ষে ১ বছর মেয়াদ থাকতে হবে।'}</div>
-            <div>• <strong className="text-white">{lang === 'EN' ? 'Photos:' : 'ছবি:'}</strong> {lang === 'EN' ? '35x45mm Lab Print (White Background).' : '৩৫x৪৫ মিমি ল্যাব প্রিন্ট (সাদা ব্যাকগ্রাউন্ড)।'}</div>
-            <div>• <strong className="text-white">{lang === 'EN' ? 'Academic:' : 'একাডেমিক:'}</strong> {lang === 'EN' ? 'All Original Certificates & Transcripts.' : 'সকল মূল সার্টিফিকেট এবং মার্কশিট।'}</div>
-            <div>• <strong className="text-white">{lang === 'EN' ? 'Financials:' : 'আর্থিক সলভেন্সি:'}</strong> {lang === 'EN' ? 'Bank Statement & Solvency Certificate.' : 'ব্যাংক স্টেটমেন্ট এবং সলভেন্সি সার্টিফিকেট।'}</div>
-            <div>• <strong className="text-white">{lang === 'EN' ? 'Other:' : 'অন্যান্য:'}</strong> {lang === 'EN' ? 'NID/Birth Certificate, Police Clearance.' : 'এনআইডি/জন্ম নিবন্ধন, পুলিশ ক্লিয়ারেন্স।'}</div>
-            <div>• <strong className="text-white">{lang === 'EN' ? 'English:' : 'ইংরেজি দক্ষতা:'}</strong> {lang === 'EN' ? 'IELTS / Duolingo / MOI (as per rule).' : 'IELTS / Duolingo / MOI (বিশ্ববিদ্যালয়ের নিয়ম অনুযায়ী)।'}</div>
-          </div>
-        </div>
-
-        {/* Country Selector Tabs */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
-          {Object.keys(guidelines).map((key) => (
-            <button
-              key={key}
-              onClick={() => setActiveCountryTab(key)}
-              className={`px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all duration-300 flex items-center space-x-2 ${
-                activeCountryTab === key
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105'
-                  : 'bg-white/80 border border-slate-200/80 text-slate-700 hover:bg-white'
-              }`}
-            >
-              <span className="text-lg">{guidelines[key].flag}</span>
-              <span>{key === 'SriLanka' ? 'Sri Lanka' : key}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Active Country Content Box */}
-        {guidelines[activeCountryTab] && (
-          <div className="bg-white/80 rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm animate-fadeIn">
-            <div className="flex items-center space-x-3 border-b border-slate-200/60 pb-4 mb-6">
-              <span className="text-3xl">{guidelines[activeCountryTab].flag}</span>
-              <h3 className="text-xl sm:text-2xl font-black text-slate-800">{guidelines[activeCountryTab].title[lang]}</h3>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {guidelines[activeCountryTab].points.map((pt, idx) => (
-                <div key={idx} className="p-4 rounded-xl bg-blue-50/50 border border-blue-100 flex items-start space-x-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                    ✓
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-extrabold text-slate-800">{pt.label[lang]}</h4>
-                    <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed font-medium">{pt.text[lang]}</p>
-                  </div>
+        {/* Stable Grid Buttons */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-12">
+          {allCountriesList.map((dest) => {
+            const isSelected = activeCountry === dest.id;
+            const destName = dest.name[currentLang] || dest.name.EN;
+            return (
+              <button
+                key={dest.id}
+                onClick={() => setActiveCountry(dest.id)}
+                className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center text-center cursor-pointer group ${
+                  isSelected 
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-xl scale-105 z-10' 
+                    : 'bg-white hover:bg-blue-50/50 text-slate-700 border-slate-200/80 hover:border-blue-300 shadow-2xs'
+                }`}
+              >
+                <div className="w-10 h-7 rounded overflow-hidden shadow-2xs border border-slate-200/60 mb-2.5 flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <img src={dest.flag} alt={dest.name.EN} className="w-full h-full object-cover" />
                 </div>
-              ))}
+                <h4 className="text-xs sm:text-sm font-black leading-tight line-clamp-1 w-full">{destName}</h4>
+                <span className={`text-[9px] font-extrabold uppercase mt-1 block truncate w-full ${isSelected ? 'text-blue-400' : 'text-slate-400'}`}>
+                  {dest.badge}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Dynamic Destination Showcase Card */}
+        <div className="bg-white rounded-[2.5rem] border border-slate-200/80 shadow-xl p-6 sm:p-12 transition-all duration-500 overflow-hidden relative">
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+            
+            <div className="lg:col-span-5">
+              <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-lg border-2 border-slate-100 group">
+                <img 
+                  src={currentCountry.landmarkImg} 
+                  alt={currentCountry.name.EN} 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80' }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-slate-900 px-3.5 py-1.5 rounded-full text-xs font-black uppercase flex items-center space-x-2 shadow-md">
+                  <img src={currentCountry.flag} alt="flag" className="w-5 h-3.5 object-cover rounded shadow-2xs" />
+                  <span>{currentCountry.name[currentLang] || currentCountry.name.EN}</span>
+                </div>
+
+                <div className="absolute bottom-4 left-4 right-4 text-white">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 block">Work Rights Abroad</span>
+                  <h4 className="text-base font-black leading-snug mt-0.5">{currentCountry.pswr[currentLang] || currentCountry.pswr.EN}</h4>
+                </div>
+              </div>
             </div>
+
+            <div className="lg:col-span-7 space-y-6">
+              <div>
+                <span className="text-xs font-black uppercase tracking-widest text-blue-600 block">
+                  📍 Destination Spotlight
+                </span>
+                <h3 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight mt-1">
+                  {currentCountry.name[currentLang] || currentCountry.name.EN}
+                </h3>
+                <p className="text-sm font-bold text-slate-600 bg-slate-50 p-3.5 rounded-xl border-l-4 border-blue-600 mt-3">
+                  ★ {currentCountry.tagline[currentLang] || currentCountry.tagline.EN}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block flex items-center"><Clock size={12} className="mr-1 text-blue-600"/> Available Intakes</span>
+                  <span className="text-xs sm:text-sm font-black text-slate-800 mt-1 block">{currentCountry.intakes[currentLang] || currentCountry.intakes.EN}</span>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block flex items-center"><DollarSign size={12} className="mr-1 text-emerald-600"/> Average Tuition Fee</span>
+                  <span className="text-xs sm:text-sm font-black text-slate-800 mt-1 block">{currentCountry.tuition[currentLang] || currentCountry.tuition.EN}</span>
+                </div>
+
+                <div className="sm:col-span-2 p-3.5 rounded-xl bg-blue-50/50 border border-blue-200/60">
+                  <span className="text-[10px] font-black text-blue-600 uppercase tracking-wider block flex items-center"><BookOpen size={12} className="mr-1 text-blue-600"/> Entry / Language Requirement</span>
+                  <span className="text-xs sm:text-sm font-black text-slate-800 mt-1 block">{currentCountry.requirements[currentLang] || currentCountry.requirements.EN}</span>
+                </div>
+              </div>
+
+              <div className="space-y-2.5 pt-2">
+                <h4 className="text-xs font-black uppercase tracking-widest text-slate-500">
+                  {currentLang === 'EN' ? 'Key Advantages & Pathways:' : 'বিশেষ সুবিধাসমূহ:'}
+                </h4>
+                {currentCountry.highlights.map((point, idx) => (
+                  <div key={idx} className="flex items-start space-x-2.5 text-xs sm:text-sm font-bold text-slate-700">
+                    <CheckCircle2 size={16} className="text-emerald-600 mt-0.5 flex-shrink-0" />
+                    <span>{point[currentLang] || point.EN}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-4 flex flex-wrap items-center gap-4">
+                <a href="#consultation-form">
+                  <NeoButton variant="primary" className="!px-7 !py-3.5 text-xs sm:text-sm font-bold shadow-md">
+                    {currentLang === 'EN' ? `Apply For ${currentCountry.name.EN} →` : `${currentCountry.name.BN}-এর জন্য আবেদন করুন →`}
+                  </NeoButton>
+                </a>
+                <a href="tel:+8801818304081" className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition">
+                  <Phone size={16} className="text-blue-600"/>
+                  <span>{currentLang === 'EN' ? 'Talk to Visa Counselor' : 'কাউন্সেলরের সাথে কথা বলুন'}</span>
+                </a>
+              </div>
+
+            </div>
+
           </div>
-        )}
+
+          {/* Special VIP Schengen Showcase */}
+          {currentCountry.isSchengen && (
+            <div className="mt-12 pt-10 border-t border-slate-200">
+              <div className="text-center max-w-2xl mx-auto mb-8">
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                  🇪🇺 29 Schengen Countries 1 Unified Visa
+                </span>
+                <h4 className="text-xl sm:text-2xl font-black text-slate-900 mt-2">
+                  {currentLang === 'EN' ? 'Explore All 29 Schengen Member States' : 'শেনজেন জোনের অন্তর্ভুক্ত ২৯টি দেশের পতাকাসমূহ'}
+                </h4>
+                <p className="text-xs text-slate-500 font-medium mt-1">
+                  {currentLang === 'EN' ? 'With a single Schengen student visa, you can freely travel, network, and explore career opportunities across all these nations!' : 'একটি মাত্র শেনজেন স্টুডেন্ট ভিসায় আপনি নিচের ২৯টি দেশের যেকোনোটিতে কোনো বর্ডার ছাড়াই অবাধে যাতায়াত ও ক্যারিয়ার গড়তে পারবেন!'}
+                </p>
+              </div>
+
+              <div className="relative w-full overflow-hidden py-3 bg-slate-50 rounded-2xl border border-slate-200/60 mb-3">
+                <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none"></div>
+                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none"></div>
+                
+                <div className="animate-schengen-left gap-4 flex items-center">
+                  {[...schengenRow1, ...schengenRow1, ...schengenRow1].map((c, i) => (
+                    <div key={i} className="flex items-center space-x-2 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs flex-shrink-0">
+                      <img src={c.flag} alt={c.name} className="w-6 h-4 object-cover rounded shadow-2xs" />
+                      <span className="text-xs font-black text-slate-700">{c.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="relative w-full overflow-hidden py-3 bg-slate-50 rounded-2xl border border-slate-200/60">
+                <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none"></div>
+                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none"></div>
+                
+                <div className="animate-schengen-right gap-4 flex items-center">
+                  {[...schengenRow2, ...schengenRow2, ...schengenRow2].map((c, i) => (
+                    <div key={i} className="flex items-center space-x-2 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs flex-shrink-0">
+                      <img src={c.flag} alt={c.name} className="w-6 h-4 object-cover rounded shadow-2xs" />
+                      <span className="text-xs font-black text-slate-700">{c.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
       </section>
 
-      {/* ================= 6. FREE PROFILE ASSESSMENT FORM (Sheet Ready) ================= */}
-      <section id="assessment-form" className="bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-700 rounded-3xl p-6 sm:p-12 text-white shadow-neo-float relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+      {/* ================= 4. STUDY TOUR & SUMMER CAMP ================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
+        <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-[2.5rem] p-8 sm:p-14 border border-slate-800 shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center relative z-10">
-          
-          {/* Left Text */}
-          <div className="lg:col-span-5 space-y-6 text-center lg:text-left">
-            <span className="px-3.5 py-1 rounded-full bg-white/20 text-white font-extrabold text-xs uppercase tracking-wider backdrop-blur-md">
-              🎯 {lang === 'EN' ? 'Free Consultation' : 'ফ্রি কাউন্সিলিং'}
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-black leading-tight">
-              {lang === 'EN' ? 'Free Profile Assessment' : 'ফ্রি প্রোফাইল অ্যাসেসমেন্ট'}
-            </h2>
-            <p className="text-sm sm:text-base text-blue-100 leading-relaxed font-normal">
-              {lang === 'EN'
-                ? 'Fill out this form. Our expert visa consultants will review your academic background, bank solvency, and language score, and contact you within 24 hours with the best university pathway!'
-                : 'নিচের ফরমটি পূরণ করুন। আমাদের এক্সপার্ট ভিসা কনসালটেন্টরা আপনার রেজাল্ট ও ব্যাংক সলভেন্সি বিশ্লেষণ করে ২৪ ঘণ্টার মধ্যে আপনার সাথে যোগাযোগ করে সেরা বিশ্ববিদ্যালয়ের গাইডলাইন দেবেন!'}
-            </p>
-            <div className="p-4 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md text-xs sm:text-sm space-y-2">
-              <div>✅ <strong className="text-white">{lang === 'EN' ? '100% Free File Opening' : '১০০% ফ্রি ফাইল প্রসেসিং'}</strong> ({lang === 'EN' ? 'Limited Time' : 'সীমিত সময়ের জন্য'})</div>
-              <div>✅ <strong className="text-white">{lang === 'EN' ? 'Direct University Interview Preparation' : 'সরাসরি ইন্টারভিউ প্রস্তুতি ও স্পোকেন গাইড'}</strong></div>
-              <div>✅ <strong className="text-white">{lang === 'EN' ? 'High Visa Approval Rate & Solvency Support' : 'সর্বোচ্চ ভিসা সাফল্যের হার ও সলভেন্সি সহায়তা'}</strong></div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
+            
+            <div className="lg:col-span-7 space-y-6">
+              <div className="inline-flex items-center space-x-2 text-xs font-black tracking-widest uppercase text-indigo-400 bg-indigo-400/10 px-3.5 py-1.5 rounded-full border border-indigo-400/20">
+                <Globe size={14} />
+                <span>{currentLang === 'EN' ? 'INTERNATIONAL STUDY TOUR & CAMP' : 'আন্তর্জাতিক স্টাডি ট্যুর ও সামার ক্যাম্প'}</span>
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight text-white">
+                {currentLang === 'EN' ? 'Global Exposure Without Long-Term Commitment.' : 'পড়াশোনার পাশাপাশি আন্তর্জাতিক অভিজ্ঞতা ও ক্যাম্পাস ট্যুর।'}
+              </h2>
+
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+                {currentLang === 'EN'
+                  ? 'Our short-term International Study Tours (10 to 21 days) to Malaysia, Singapore, UK, and Dubai are designed for students, university groups, and professionals. Experience world-class university campuses, attend corporate workshops, and enhance your visa travel history.'
+                  : 'স্কুল, কলেজ ও ইউনিভার্সিটির শিক্ষার্থী এবং পেশাজীবীদের জন্য আমরা আয়োজন করি ১০ থেকে ২১ দিনের আন্তর্জাতিক স্টাডি ট্যুর ও সামার ক্যাম্প (মালয়েশিয়া, সিঙ্গাপুর, ইউকে ও দুবাই)। এর মাধ্যমে বিশ্বসেরা ক্যাম্পাস ভ্রমণ, ওয়ার্কশপ সার্টিফিকেট অর্জন এবং শক্তিশালী ভিসা ট্রাভেল হিস্ট্রি তৈরি হয়।'}
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div className="bg-white/5 p-4 rounded-2xl border border-white/10 flex items-start space-x-3">
+                  <CheckCircle2 className="text-indigo-400 mt-0.5 flex-shrink-0" size={18} />
+                  <div>
+                    <h4 className="font-bold text-sm text-white">{currentLang === 'EN' ? 'University Workshops' : 'ইউনিভার্সিটি ওয়ার্কশপ'}</h4>
+                    <p className="text-xs text-slate-400 mt-0.5">{currentLang === 'EN' ? 'Get international certificate from top foreign universities.' : 'বিখ্যাত ইউনিভার্সিটির সার্টিফিকেট ও ক্লাস করার অভিজ্ঞতা।'}</p>
+                  </div>
+                </div>
+                <div className="bg-white/5 p-4 rounded-2xl border border-white/10 flex items-start space-x-3">
+                  <CheckCircle2 className="text-emerald-400 mt-0.5 flex-shrink-0" size={18} />
+                  <div>
+                    <h4 className="font-bold text-sm text-white">{currentLang === 'EN' ? 'Strong Travel History' : 'ভিসা ট্রাভেল হিস্ট্রি'}</h4>
+                    <p className="text-xs text-slate-400 mt-0.5">{currentLang === 'EN' ? 'Boosts future student/work visa approval chances significantly.' : 'ভবিষ্যতে ইউকে/ইউরোপের ভিসা পাওয়ার সম্ভাবনা বহুগুণ বাড়িয়ে দেয়।'}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <a href="#consultation-form">
+                  <NeoButton variant="primary" className="!bg-indigo-600 hover:!bg-indigo-700 !px-7 !py-3.5 text-xs sm:text-sm font-bold shadow-lg">
+                    {currentLang === 'EN' ? 'Inquire About Upcoming Study Tour →' : 'পরবর্তী স্টাডি ট্যুর সম্পর্কে জানুন →'}
+                  </NeoButton>
+                </a>
+              </div>
             </div>
-          </div>
 
-          {/* Right Interactive Form Box */}
-          <div className="lg:col-span-7">
-            <div className="bg-white/95 backdrop-blur-2xl text-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5">
-              
+            <div className="lg:col-span-5">
+              <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10 relative group">
+                <img 
+                  src="https://images.unsplash.com/photo-1528702748617-c64d49f918af?auto=format&fit=crop&w=800&q=80" 
+                  alt="International Study Tour Group" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                <div className="absolute bottom-4 left-4 right-4 text-white">
+                  <span className="text-[10px] font-bold uppercase tracking-widest bg-indigo-600 px-2.5 py-1 rounded">Next Batch: Summer 2026</span>
+                  <h4 className="text-base font-black mt-1">Malaysia & Singapore University Tour</h4>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ================= 5. TOURIST & VISIT VISA CONSULTANCY ================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <div className="bg-white rounded-[2.5rem] border border-slate-200/80 shadow-xl p-8 sm:p-14 overflow-hidden relative">
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            
+            <div className="lg:col-span-5 order-2 lg:order-1">
+              <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-lg border-2 border-slate-100 relative group">
+                <img 
+                  src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80" 
+                  alt="Tourist and Visit Visa" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                <div className="absolute bottom-4 left-4 right-4 text-white">
+                  <span className="text-[10px] font-bold uppercase tracking-widest bg-emerald-600 px-2.5 py-1 rounded">99% Document Accuracy</span>
+                  <h4 className="text-base font-black mt-1">Schengen, UK, Canada & Australia Visit Visa</h4>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-7 space-y-6 order-1 lg:order-2">
+              <div className="inline-flex items-center space-x-2 text-xs font-black tracking-widest uppercase text-emerald-600 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-200">
+                <FileCheck size={14} />
+                <span>{currentLang === 'EN' ? 'TOURIST & VISIT VISA SERVICES' : 'ট্যুরিস্ট ও ভিজিট ভিসা প্রসেসিং'}</span>
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight text-slate-900">
+                {currentLang === 'EN' ? 'Hassle-Free Visit Visas For Families & Professionals.' : 'পরিবার ও পেশাজীবীদের জন্য ঝামেলাহীন ভিজিট ও ট্যুরিস্ট ভিসা।'}
+              </h2>
+
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+                {currentLang === 'EN'
+                  ? 'Planning a vacation, attending a business conference, or visiting relatives abroad? CareerLift provides expert document auditing, invitation letter drafting, itinerary planning, and interview preparation for UK, Canada, Australia, Japan, and Schengen visit visas.'
+                  : 'বিদেশে ছুটি কাটানো, বিজনেস সেমিনার বা আত্মীয়দের সাথে দেখা করার পরিকল্পনা করছেন? ইউকে, কানাডা, অস্ট্রেলিয়া, জাপান এবং শেনজেন ভিজিট ভিসার জন্য আমরা দিচ্ছি নির্ভুল ডকুমেন্ট অডিট, ট্রাভেল ইটিইনারারি এবং মক ইন্টারভিউ প্রস্তুতি।'}
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center space-x-2.5">
+                  <CheckCircle2 size={18} className="text-emerald-600 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm font-bold text-slate-800">{currentLang === 'EN' ? 'Bank Statement & Fund Auditing' : 'ব্যাংক স্টেটমেন্ট ও ফান্ড অডিটিং'}</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center space-x-2.5">
+                  <CheckCircle2 size={18} className="text-emerald-600 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm font-bold text-slate-800">{currentLang === 'EN' ? 'Hotel & Flight Itinerary Booking' : 'হোটেল ও এয়ার টিকেট ইটিইনারারি'}</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center space-x-2.5">
+                  <CheckCircle2 size={18} className="text-emerald-600 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm font-bold text-slate-800">{currentLang === 'EN' ? 'Corporate Business Visa Support' : 'কর্পোরেট বিজনেস ভিসা সাপোর্ট'}</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center space-x-2.5">
+                  <CheckCircle2 size={18} className="text-emerald-600 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm font-bold text-slate-800">{currentLang === 'EN' ? 'Family & Medical Visit Visa' : 'ফ্যামিলি ও মেডিকেল ভিজিট ভিসা'}</span>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <a href="#consultation-form">
+                  <NeoButton variant="primary" className="!bg-emerald-600 hover:!bg-emerald-700 !px-7 !py-3.5 text-xs sm:text-sm font-bold shadow-md">
+                    {currentLang === 'EN' ? 'Consult For Visit Visa →' : 'ভিজিট ভিসার জন্য যোগাযোগ করুন →'}
+                  </NeoButton>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ================= 6. PROCESS TIMELINE ================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
+        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+          <span className="text-xs font-black uppercase tracking-widest text-purple-600 bg-purple-50 px-3.5 py-1 rounded-full border border-purple-200 inline-block">
+            🚀 {currentLang === 'EN' ? 'STEP-BY-STEP PATHWAY' : 'আমাদের ৫ ধাপের ভর্তি ও ভিসা প্রক্রিয়া'}
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
+            {currentLang === 'EN' ? 'How We Guide You To Your Dream University' : 'যেভাবে আমরা আপনাকে গাইড করি'}
+          </h2>
+          <p className="text-sm sm:text-base text-slate-600 font-medium">
+            {currentLang === 'EN'
+              ? 'Our structured 5-step visa and admission processing ensures zero errors, maximum scholarship alignment, and high visa approval rates.'
+              : 'আমাদের কাঠামোগত ৫ ধাপের ভর্তি ও ভিসা প্রসেসিং নিশ্চিত করে ১০০% নির্ভুল আবেদন, স্কলারশিপ প্রাপ্তি এবং সর্বোচ্চ ভিসা সাফল্য।'}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 relative">
+          {processSteps.map((stepItem, idx) => (
+            <div 
+              key={idx} 
+              className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between relative group hover:-translate-y-1"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center group-hover:scale-110 group-hover:border-blue-300 transition-all shadow-2xs">
+                    {stepItem.icon}
+                  </div>
+                  <span className="text-2xl font-black text-slate-300 group-hover:text-blue-600 transition-colors">
+                    {stepItem.step}
+                  </span>
+                </div>
+
+                <h3 className="text-base font-black text-slate-900 mb-2.5 leading-snug group-hover:text-blue-600 transition-colors">
+                  {stepItem.title[currentLang] || stepItem.title.EN}
+                </h3>
+
+                <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                  {stepItem.desc[currentLang] || stepItem.desc.EN}
+                </p>
+              </div>
+
+              <div className="mt-6 pt-3 border-t border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center justify-between">
+                <span>STEP 0{idx + 1}</span>
+                <CheckCircle2 size={14} className="text-emerald-500" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ================= 7. OFFICE VISIT & COUNSELOR CONSULTATION SHOWCASE ================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
+        <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-[2.5rem] p-8 sm:p-14 border border-slate-800 shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
+            
+            <div className="lg:col-span-6 space-y-6">
+              <div className="inline-flex items-center space-x-2 text-xs font-black tracking-widest uppercase text-amber-400 bg-amber-400/10 px-3.5 py-1.5 rounded-full border border-amber-400/20">
+                <Users size={14} />
+                <span>{currentLang === 'EN' ? '1-ON-1 COUNSELING SESSION' : 'সরাসরি ওয়ান-টু-ওয়ান কাউন্সেলিং'}</span>
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight text-white">
+                {currentLang === 'EN' ? 'Visit Our Office For An Authentic Profile Assessment.' : 'সঠিক ও বাস্তব প্রোফাইল মূল্যায়নের জন্য চলে আসুন আমাদের অফিসে।'}
+              </h2>
+
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+                {currentLang === 'EN'
+                  ? 'We do not make fake promises. When you visit our Bijoy Nagar desk, our UK and Japan visa experts will personally inspect your certificates, explain real financial requirements, and show you transparent fee breakdowns.'
+                  : 'আমরা কোনো অবাস্তব বা ভুয়া প্রতিশ্রুতি দিই না। আমাদের বিজয় নগর অফিসে এলে ইউকে এবং জাপান ভিসা এক্সপার্টরা সরাসরি আপনার সার্টিফিকেট যাচাই করে সঠিক খরচের হিসাব এবং বাস্তব সম্ভাবনার কথা জানাবেন।'}
+              </p>
+
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center space-x-3 text-xs sm:text-sm font-bold text-slate-200">
+                  <CheckCircle2 size={18} className="text-emerald-400 flex-shrink-0" />
+                  <span>{currentLang === 'EN' ? 'Direct meeting with Course Coordinators & Visa Officers' : 'কোর্স কো-অর্ডিনেটর ও ভিসা এক্সপার্টদের সাথে সরাসরি মিটিং'}</span>
+                </div>
+                <div className="flex items-center space-x-3 text-xs sm:text-sm font-bold text-slate-200">
+                  <CheckCircle2 size={18} className="text-emerald-400 flex-shrink-0" />
+                  <span>{currentLang === 'EN' ? 'Free scholarship evaluation & document checklist review' : 'ফ্রি স্কলারশিপ যাচাই এবং ডকুমেন্ট চেকলিস্ট প্রদান'}</span>
+                </div>
+                <div className="flex items-center space-x-3 text-xs sm:text-sm font-bold text-slate-200">
+                  <CheckCircle2 size={18} className="text-emerald-400 flex-shrink-0" />
+                  <span>{currentLang === 'EN' ? 'Open Saturday to Thursday (10:00 AM - 6:00 PM)' : 'শনিবার থেকে বৃহস্পতিবার খোলা (সকাল ১০:০০ টা - সন্ধ্যা ৬:০০ টা)'}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-6">
+              <div className="aspect-video sm:aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10 relative group">
+                <img 
+                  src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=1000&q=80" 
+                  alt="Student Counseling Meeting" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                
+                <div className="absolute bottom-6 left-6 right-6 text-white flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest bg-blue-600 px-2.5 py-1 rounded">Executive Desk</span>
+                    <h4 className="text-base font-black mt-1">CareerLift Admission Counseling Hub</h4>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-black">
+                    ✓
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ================= 8. GOOGLE MAP + CONTACT + BOOK CONSULTATION FORM ================= */}
+      <section id="consultation-form" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
+        <div className="bg-white rounded-[2.5rem] border border-slate-200/80 shadow-xl p-6 sm:p-14 overflow-hidden">
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+            
+            <div className="lg:col-span-5 space-y-6">
+              <div>
+                <span className="text-xs font-black uppercase tracking-widest text-blue-600 block mb-1">
+                  📍 {currentLang === 'EN' ? 'VISIT OUR HEAD OFFICE' : 'অফিসের ঠিকানা ও ম্যাপ'}
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
+                  {currentLang === 'EN' ? 'CareerLift Consultation Center' : 'ক্যারিয়ারলিফ্ট কনসালটেন্সি সেন্টার'}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 font-medium mt-2 leading-relaxed">
+                  {currentLang === 'EN'
+                    ? 'Our office is centrally located in Bijoy Nagar, Dhaka. Feel free to walk in for any visa or course inquiries.'
+                    : 'আমাদের অফিস ঢাকার বিজয়নগরের কেন্দ্রস্থলে অবস্থিত। ভিসা বা যেকোনো কোর্সের বিস্তারিত জানতে সরাসরি চলে আসুন।'}
+                </p>
+              </div>
+
+              <div className="space-y-3.5">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start space-x-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-white text-blue-600 flex items-center justify-center shadow-sm flex-shrink-0 font-bold">
+                    📍
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black uppercase text-slate-400">{currentLang === 'EN' ? 'Head Office Address' : 'অফিসের ঠিকানা'}</h4>
+                    <p className="text-xs sm:text-sm font-bold text-slate-800 mt-0.5 leading-snug">
+                      180–181 Prime Tower (Lift-3), Shaheed Nazrul Islam Sharak, Bijoy Nagar, Dhaka-1000
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start space-x-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-white text-emerald-600 flex items-center justify-center shadow-sm flex-shrink-0 font-bold">
+                    📞
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black uppercase text-slate-400">{currentLang === 'EN' ? 'Direct Hotline & WhatsApp' : 'সরাসরি হটলাইন ও হোয়াটসঅ্যাপ'}</h4>
+                    <p className="text-xs sm:text-sm font-bold text-slate-800 mt-0.5">
+                      +880 1818-304081 | +880 1965-157203
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start space-x-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-white text-purple-600 flex items-center justify-center shadow-sm flex-shrink-0 font-bold">
+                    ✉️
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black uppercase text-slate-400">{currentLang === 'EN' ? 'Official Email' : 'অফিসিয়াল ইমেইল'}</h4>
+                    <p className="text-xs sm:text-sm font-bold text-slate-800 mt-0.5">
+                      careerliftinstitute@gmail.com
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full h-52 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+                <iframe 
+                  title="CareerLift Office Map"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3652.227599094801!2d90.40898531543144!3d23.73926189511977!2m3!1f0!2f0!3f0!3m2!1f0!2f0!3f0!3m2!1f1024!2i768!4f13.1!3m3!1m2!1s0x3755b8f2c68e3709%3A0x8e52e428dfbbfb8!2sBijoy%20Nagar%2C%20Dhaka!5e0!3m2!1sen!2sbd!4v1711100000000!5m2!1sen!2sbd" 
+                  className="w-full h-full object-cover grayscale opacity-90 hover:grayscale-0 hover:opacity-100 transition-all duration-500" 
+                  style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
+            </div>
+
+            <div className="lg:col-span-7 bg-slate-50 border border-slate-200/80 rounded-3xl p-6 sm:p-10 space-y-6 shadow-sm">
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900">
+                  {currentLang === 'EN' ? 'Book Your Free Consultation' : 'ফ্রি কনসালটেন্সির জন্য রেজিস্ট্রেশন করুন'}
+                </h3>
+                <p className="text-xs sm:text-sm font-medium text-slate-500 mt-1">
+                  {currentLang === 'EN' 
+                    ? 'Fill out this form and our senior counselor will call you within 24 hours to discuss your study, tour, or visit visa profile.'
+                    : 'ফর্মটি পূরণ করুন। আমাদের অভিজ্ঞ ভিসা কাউন্সিলর আগামী ২৪ ঘণ্টার মধ্যে ফোনে আপনার সাথে যোগাযোগ করবেন।'}
+                </p>
+              </div>
+
               {submitSuccess ? (
-                <div className="p-8 rounded-2xl bg-emerald-50 border border-emerald-300 text-center space-y-3 animate-fadeIn my-6">
-                  <div className="w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto text-3xl font-bold">✓</div>
-                  <h4 className="text-xl font-black text-emerald-800">{lang === 'EN' ? 'Assessment Submitted!' : 'আবেদন জমা হয়েছে!'}</h4>
-                  <p className="text-xs sm:text-sm text-emerald-600">
-                    {lang === 'EN'
-                      ? 'Thank you! Your profile assessment request has been received. Our expert visa team will review your details and contact you within 24 hours.'
-                      : 'ধন্যবাদ! আপনার প্রোফাইল অ্যাসেসমেন্ট ফরমটি সফলভাবে জমা হয়েছে। আমাদের এক্সপার্ট ভিসা টিম আপনার তথ্য বিশ্লেষণ করে ২৪ ঘণ্টার মধ্যে যোগাযোগ করবে।'}
+                <div className="p-8 rounded-2xl bg-emerald-100 border border-emerald-200 text-center space-y-3">
+                  <CheckCircle2 size={48} className="text-emerald-600 mx-auto animate-bounce" />
+                  <h4 className="text-xl font-black text-emerald-900">
+                    {currentLang === 'EN' ? 'Registration Successful!' : 'আবেদন সফলভাবে গৃহীত হয়েছে!'}
+                  </h4>
+                  <p className="text-xs sm:text-sm font-medium text-emerald-800">
+                    {currentLang === 'EN' ? 'We have received your profile details. Our senior counselor will call you soon.' : 'আমরা আপনার তথ্য পেয়েছি। আমাদের সিনিয়র কাউন্সিলর শীঘ্রই আপনার সাথে ফোনে যোগাযোগ করবেন।'}
                   </p>
                 </div>
               ) : (
-                <form onSubmit={handleAssessmentSubmit} className="space-y-4">
+                <form onSubmit={handleFormSubmit} className="space-y-4">
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">{lang === 'EN' ? 'Your Name *' : 'আপনার নাম *'}</label>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 block">{currentLang === 'EN' ? 'Your Full Name *' : 'আপনার সম্পূর্ণ নাম *'}</label>
                       <input 
-                        type="text" name="name" required value={formData.name} onChange={handleInputChange} placeholder={lang === 'EN' ? "Full Name" : "সম্পূর্ণ নাম"} 
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 shadow-inner text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                        type="text" name="name" required value={formData.name} onChange={handleInputChange} placeholder="e.g. Md. Shakawat Hossain" 
+                        className="w-full px-4 py-3.5 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-2xs"
                       />
                     </div>
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">{lang === 'EN' ? 'Phone (WhatsApp) *' : 'ফোন নম্বর (হোয়াটসঅ্যাপ) *'}</label>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 block">{currentLang === 'EN' ? 'WhatsApp / Phone Number *' : 'মোবাইল বা হোয়াটসঅ্যাপ নম্বর *'}</label>
                       <input 
-                        type="tel" name="phone" required value={formData.phone} onChange={handleInputChange} placeholder="018XX-XXXXXX" 
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 shadow-inner text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                        type="tel" name="phone" required value={formData.phone} onChange={handleInputChange} placeholder="018XXXXXXXX" 
+                        className="w-full px-4 py-3.5 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-2xs"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">{lang === 'EN' ? 'Email Address *' : 'ইমেইল অ্যাড্রেস *'}</label>
-                      <input 
-                        type="email" name="email" required value={formData.email} onChange={handleInputChange} placeholder="email@example.com" 
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 shadow-inner text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">{lang === 'EN' ? 'Select Last Degree *' : 'সর্বশেষ শিক্ষাগত যোগ্যতা *'}</label>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 block">{currentLang === 'EN' ? 'Required Service Type *' : 'কাঙ্ক্ষিত সেবার ধরন *'}</label>
                       <select 
-                        name="qualification" required value={formData.qualification} onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 shadow-inner text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 cursor-pointer"
+                        name="serviceType" value={formData.serviceType} onChange={handleInputChange}
+                        className="w-full px-4 py-3.5 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer shadow-2xs"
                       >
-                        <option value="">{lang === 'EN' ? '-- Select Education --' : '-- যোগ্যতা নির্বাচন করুন --'}</option>
-                        <option value="SSC / O-Level">SSC / O-Level</option>
-                        <option value="HSC / A-Level / Diploma">HSC / A-Level / Diploma</option>
-                        <option value="Bachelor / Honours">Bachelor / Honours</option>
-                        <option value="Masters">Masters</option>
+                        <option value="Study Abroad">🎓 Study Abroad & Student Visa</option>
+                        <option value="Study Tour">✈️ International Study Tour & Summer Camp</option>
+                        <option value="Visit Visa">🧳 Tourist & Visit Visa Consultancy</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 block">{currentLang === 'EN' ? 'Preferred Destination' : 'পছন্দের গন্তব্য (দেশ)'}</label>
+                      <select 
+                        name="destination" value={formData.destination} onChange={handleInputChange}
+                        className="w-full px-4 py-3.5 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer shadow-2xs"
+                      >
+                        <option value="UK">🇬🇧 United Kingdom (UK) - OTHM/Qualifi Pathway</option>
+                        <option value="Schengen">🇪🇺 Europe (Schengen Area 29 Countries)</option>
+                        <option value="Japan">🇯🇵 Japan (Study & SSW Work Visa)</option>
+                        <option value="Canada">🇨🇦 Canada (Study & Express Entry PR)</option>
+                        <option value="Australia">🇦🇺 Australia (High Wage & PSW)</option>
+                        <option value="Malaysia">🇲🇾 Malaysia (UK Dual Award Degree)</option>
+                        <option value="Malta">🇲🇹 Malta (Easy Schengen Entry)</option>
+                        <option value="South Korea">🇰🇷 South Korea (Tech & E-7 Visa)</option>
+                        <option value="Finland">🇫🇮 Finland (World's Happiest Country)</option>
+                        <option value="Germany">🇩🇪 Germany (Free Public Tuition)</option>
+                        <option value="New Zealand">🇳🇿 New Zealand (Green List PR)</option>
+                        <option value="China">🇨🇳 China (WHO Medical & Engineering)</option>
+                        <option value="Sri Lanka">🇱🇰 Sri Lanka (Affordable Medical Hub)</option>
+                        <option value="UAE">🇦🇪 Dubai / UAE (Golden Visa & Tax-Free)</option>
                       </select>
                     </div>
                   </div>
 
-                  {/* Interested Countries (Multi-select Checkboxes) */}
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
-                      {lang === 'EN' ? 'Interested Countries (Select multiple) *' : 'পছন্দের দেশসমূহ (একাধিক নির্বাচন করা যাবে) *'}
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {['UK', 'Canada', 'Japan', 'Malaysia', 'China', 'Sri Lanka', 'Europe', 'Australia'].map((c) => (
-                        <label key={c} className={`flex items-center space-x-2 p-2.5 rounded-xl border cursor-pointer text-xs font-bold transition ${
-                          formData.countries.includes(c) ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                        }`}>
-                          <input 
-                            type="checkbox" 
-                            checked={formData.countries.includes(c)} 
-                            onChange={() => handleCountryCheckbox(c)} 
-                            className="hidden" 
-                          />
-                          <span>{formData.countries.includes(c) ? '✓' : '+'}</span>
-                          <span>{c}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">{lang === 'EN' ? 'Additional Message / IELTS Score (Optional)' : 'অতিরিক্ত বার্তা / আইইএলটিএস স্কোর (ঐচ্ছিক)'}</label>
-                    <textarea 
-                      name="message" value={formData.message} onChange={handleInputChange} rows="2" placeholder={lang === 'EN' ? "Mention your GPA, IELTS score, or any specific query..." : "আপনার জিপিএ, আইইএলটিএস স্কোর বা কোনো বিশেষ প্রশ্ন থাকলে লিখুন..."} 
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 shadow-inner text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                    ></textarea>
-                  </div>
-
                   <div className="pt-2">
                     <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm shadow-xl shadow-blue-500/20 hover:from-blue-700 hover:to-indigo-700 active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+                      type="submit" disabled={isSubmitting}
+                      className="w-full py-4 rounded-xl bg-slate-900 hover:bg-blue-600 text-white font-black text-sm transition-all shadow-lg active:scale-98 disabled:opacity-50 flex items-center justify-center space-x-2 group"
                     >
-                      {isSubmitting ? (
-                        <>
-                          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                          <span>{lang === 'EN' ? 'Sending to Sheet...' : 'তথ্য শীটে পাঠানো হচ্ছে...'}</span>
-                        </>
-                      ) : (
-                        <span>{lang === 'EN' ? 'Submit for Free Assessment →' : 'ফ্রি অ্যাসেসমেন্টের জন্য আবেদন করুন →'}</span>
-                      )}
+                      <span>{isSubmitting ? (currentLang === 'EN' ? 'Processing Request...' : 'প্রসেসিং হচ্ছে...') : (currentLang === 'EN' ? 'Submit For Free Evaluation →' : 'ফ্রি মূল্যায়নের জন্য আবেদন করুন →')}</span>
                     </button>
+                  </div>
+
+                  <div className="flex items-center justify-center space-x-1.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest pt-2">
+                    <ShieldCheck size={14} className="text-emerald-500" />
+                    <span>{currentLang === 'EN' ? '100% Confidential & Secure Advisory' : '১০০% গোপনীয় ও নিরাপদ তথ্য সংরক্ষণ'}</span>
                   </div>
 
                 </form>
               )}
 
+              <div className="pt-4 border-t border-slate-200/60 flex items-center justify-between text-xs font-bold text-slate-600">
+                <span>💬 Need instant reply?</span>
+                <a href="https://wa.me/8801818304081" target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:underline flex items-center space-x-1">
+                  <span>Chat on WhatsApp Now →</span>
+                </a>
+              </div>
             </div>
+
           </div>
 
         </div>
