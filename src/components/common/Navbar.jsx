@@ -17,14 +17,14 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Updated Navigation Items with NSDA Free Course
+  // Navigation Items without special highlighting
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'Courses', path: '/courses' },
     { name: 'Study Abroad', path: '/study-abroad' },
     { name: 'Services', path: '/services' },
     { name: 'About Us', path: '/about-us' },
-    { name: 'NSDA Free Course', path: '/nsda-free-course', isSpecial: true },
+    { name: 'NSDA Free Course', path: '/nsda-free-course' },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -39,14 +39,17 @@ export default function Navbar() {
           : 'bg-white/60 backdrop-blur-lg border-white/60 shadow-[0_8px_24px_rgba(165,175,190,0.25)]'
       }`}>
         
-        {/* Logo Section */}
-        <div onClick={() => window.location.href = '/'} className="flex items-center cursor-pointer pl-1 group">
+        {/* 👇 Logo Section with Bold & Aesthetic CAREERLIFT Text */}
+        <Link to="/" className="flex items-center space-x-2.5 cursor-pointer pl-1 group">
           <img 
             src="/careerlift-logo.png" 
             alt="CareerLift" 
             className="h-8 sm:h-10 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
           />
-        </div>
+          <span className="text-base sm:text-xl font-black tracking-widest text-slate-900 group-hover:text-blue-600 transition-colors leading-none font-sans">
+            CAREER<span className="text-blue-600 group-hover:text-slate-900 transition-colors">LIFT</span>
+          </span>
+        </Link>
 
         {/* Desktop Navigation Links */}
         <div className="hidden lg:flex items-center space-x-1 bg-slate-200/50 p-1 rounded-full border border-white/60 backdrop-blur-md">
@@ -57,9 +60,7 @@ export default function Navbar() {
               className={`px-3.5 py-1.5 rounded-full font-medium text-xs xl:text-sm transition-all duration-300 ${
                 isActive(item.path)
                   ? 'bg-white text-blue-600 shadow-[0_2px_8px_rgba(0,0,0,0.08)] font-semibold scale-100'
-                  : item.isSpecial
-                    ? 'text-emerald-700 bg-emerald-100/60 hover:bg-emerald-500 hover:text-white font-bold animate-pulse hover:animate-none'
-                    : 'text-slate-600 hover:text-blue-600 hover:bg-white/40 scale-95 hover:scale-100'
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-white/40 scale-95 hover:scale-100'
               }`}
             >
               {item.name}
@@ -117,9 +118,7 @@ export default function Navbar() {
               className={`text-left px-5 py-3 rounded-2xl font-medium text-sm transition ${
                 isActive(item.path)
                   ? 'bg-blue-600 text-white font-semibold shadow-md'
-                  : item.isSpecial
-                    ? 'bg-emerald-100 text-emerald-800 font-bold'
-                    : 'text-slate-700 hover:bg-white/80'
+                  : 'text-slate-700 hover:bg-white/80'
               }`}
             >
               {item.name}
